@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmo de Búsqueda Secuencial - Simulador Interactivo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h2, h3 {
+            color: #2c3e50;
+        }
+        
+        h2 {
+            border-bottom: 2px solid #009688;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .example-container {
+            margin: 2rem 0;
+        }
+
+        .code-and-array {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .code-box, .array-box {
+            flex: 1;
+            min-width: 340px;
+            box-sizing: border-box;
+        }
+
+        .code-box pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-line {
+            display: block;
+            padding: 3px 0;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .code-line.highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-left: 5px solid #ffc107;
+            padding-left: 15px;
+            margin-left: -15px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
+        }
+
+        .array-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .array-box h3 {
+            margin-top: 0;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .array-element {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #009688;
+            color: white;
+            margin: 3px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .array-index {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            position: absolute;
+            top: -20px;
+            background: #00796B;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .array-element.highlight {
+            background: #FF9800;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.7);
+        }
+
+        .array-element.found {
+            background: #4CAF50;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .array-element.not-found {
+            background: #F44336;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .simulation-box {
+            background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 6px 12px rgba(0, 150, 136, 0.2);
+        }
+
+        .simulation-controls {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #009688;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #00796B;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #input-buscar {
+            padding: 0.6rem;
+            font-size: 1.1rem;
+            border: 2px solid #80cbc4;
+            border-radius: 8px;
+            width: 140px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #input-buscar:focus {
+            outline: none;
+            border-color: #009688;
+            box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.3);
+        }
+
+        .paso-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #paso-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #009688);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .result-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #009688;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .result-found {
+            border-left-color: #4CAF50;
+        }
+
+        .result-not-found {
+            border-left-color: #F44336;
+        }
+
+        @media (max-width: 768px) {
+            .code-and-array {
+                flex-direction: column;
+            }
+            .array-box {
+                margin-top: 1.5rem;
+            }
+            .simulation-controls {
+                justify-content: center;
+            }
+            .array-element {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                margin: 2px;
+            }
+            .array-container {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <h3>📌 ¿Qué es?</h3>
+        <p>La <strong>búsqueda secuencial</strong> (o búsqueda lineal) es un algoritmo que recorre los elementos de una lista o array uno por uno, desde el principio hasta el final, hasta encontrar el elemento buscado o llegar al final.</p>
+        
+        <h3>🌍 Analogía del mundo real</h3>
+        <p>Es como buscar un libro en una estantería desordenada: <em>“Revisas cada libro, uno por uno, hasta encontrar el que buscas o hasta que te das por vencido al llegar al final.”</em></p>
+
+        <h3>✅ Ventajas</h3>
+        <ul>
+            <li>Funciona con cualquier tipo de datos y estructuras.</li>
+            <li>No requiere que los datos estén ordenados.</li>
+            <li>Sencillo de implementar y entender.</li>
+        </ul>
+
+        <h3>❌ Desventajas</h3>
+        <ul>
+            <li>Ineficiente para grandes conjuntos de datos (O(n) en el peor caso).</li>
+            <li>Siempre recorre todos los elementos en el peor caso.</li>
+        </ul>
+    </section>
+    <h2>🔹 Algoritmo de Búsqueda Secuencial</h2>
+
+    <section class="simulation-box">
+        <h3>▶️ Simulación Interactiva - Paso a Paso</h3>
+        <p>Modifica el valor a buscar, luego usa los botones para avanzar o retroceder en la ejecución.</p>
+        
+        <div class="simulation-controls">
+            <input type="number" id="input-buscar" value="7" placeholder="Buscar">
+            <button id="btn-generar" class="btn">🔄 Generar Nuevo Array</button>
+            <button id="btn-reiniciar" class="btn">🔁 Reiniciar</button>
+            <button id="btn-anterior" class="btn" disabled>⬅️ Anterior</button>
+            <button id="btn-siguiente" class="btn">Siguiente ➡️</button>
+        </div>
+
+        <div id="output-simulacion">
+            <p><strong>Salida:</strong> <span id="resultado">...</span></p>
+            <p><strong>Paso actual:</strong> <span id="paso">Esperando inicio...</span></p>
+            <div id="paso-indicator" class="paso-bar">
+                <div id="paso-progress"></div>
+            </div>
+            <div id="result-box" class="result-box">
+                <p id="result-message">Ingresa un valor y presiona "Reiniciar" para comenzar la búsqueda.</p>
+            </div>
+        </div>
+    </section>
+
+<section class="example-container">
+        <div class="code-and-array">
+            <!-- Código Java -->
+            <div class="code-box">
+                <h3>💻 Ejemplo Completo: Búsqueda Secuencial en Java (con main)</h3>
+                <pre><code><span class="code-line" data-line="1">public class BusquedaSecuencial {</span>
+<span class="code-line" data-line="2">    </span>
+<span class="code-line" data-line="3">    // Método que realiza la búsqueda secuencial</span>
+<span class="code-line" data-line="4">    public static int buscar(int[] arr, int objetivo) {</span>
+<span class="code-line highlightable" data-line="5" id="line-for">        for (int i = 0; i < arr.length; i++) {</span>
+<span class="code-line highlightable" data-line="6" id="line-if">            if (arr[i] == objetivo) {</span>
+<span class="code-line highlightable" data-line="7" id="line-return">                return i;  // Elemento encontrado</span>
+<span class="code-line" data-line="8">            }</span>
+<span class="code-line" data-line="9">        }</span>
+<span class="code-line highlightable" data-line="10" id="line-notfound">        return -1;  // Elemento no encontrado</span>
+<span class="code-line" data-line="11">    }</span>
+<span class="code-line" data-line="12">    </span>
+<span class="code-line" data-line="13">    // Método main para probar el algoritmo</span>
+<span class="code-line" data-line="14">    public static void main(String[] args) {</span>
+<span class="code-line" data-line="15">        int[] numeros = {5, 3, 7, 1, 9, 2, 8, 4, 6, 10};</span>
+<span class="code-line" data-line="16">        int objetivo = 7;</span>
+<span class="code-line" data-line="17">        </span>
+<span class="code-line" data-line="18">        int resultado = buscar(numeros, objetivo);</span>
+<span class="code-line" data-line="19">        </span>
+<span class="code-line" data-line="20">        if (resultado != -1) {</span>
+<span class="code-line" data-line="21">            System.out.println("Elemento " + objetivo + " encontrado en la posición: " + resultado);</span>
+<span class="code-line" data-line="22">        } else {</span>
+<span class="code-line" data-line="23">            System.out.println("Elemento " + objetivo + " no encontrado.");</span>
+<span class="code-line" data-line="24">        }</span>
+<span class="code-line" data-line="25">    }</span>
+<span class="code-line" data-line="26">}</span></code></pre>
+            </div>
+
+            <!-- Representación del Array -->
+            <div class="array-box">
+                <h3>📊 Representación Visual del Array</h3>
+                <div class="array-container" id="array-visual">
+                    <!-- Los elementos del array se generarán dinámicamente -->
+                </div>
+                <p><strong>Array actual:</strong> <span id="array-text">[ ]</span></p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class BusquedaSecuencialSimulator {
+            constructor() {
+                this.currentStep = 0;
+                this.totalSteps = 0;
+                this.array = [];
+                this.objetivo = 7;
+                this.posicionActual = 0;
+                this.resultadoBusqueda = -1;
+                this.encontrado = false;
+                this.stepsHistory = []; // Para almacenar el historial de pasos
+
+                this.initializeElements();
+                this.bindEvents();
+                this.generarArray();
+                this.reiniciar();
+            }
+
+            initializeElements() {
+                // Controles
+                this.inputBuscar = document.getElementById('input-buscar');
+                this.btnGenerar = document.getElementById('btn-generar');
+                this.btnReiniciar = document.getElementById('btn-reiniciar');
+                this.btnAnterior = document.getElementById('btn-anterior');
+                this.btnSiguiente = document.getElementById('btn-siguiente');
+
+                // Salida
+                this.resultadoEl = document.getElementById('resultado');
+                this.pasoEl = document.getElementById('paso');
+                this.pasoProgress = document.getElementById('paso-progress');
+                this.resultBox = document.getElementById('result-box');
+                this.resultMessage = document.getElementById('result-message');
+
+                // Código
+                this.lineFor = document.getElementById('line-for');
+                this.lineIf = document.getElementById('line-if');
+                this.lineReturn = document.getElementById('line-return');
+                this.lineNotfound = document.getElementById('line-notfound');
+
+                // Array visual
+                this.arrayVisual = document.getElementById('array-visual');
+                this.arrayText = document.getElementById('array-text');
+            }
+
+            bindEvents() {
+                this.btnGenerar.addEventListener('click', () => this.generarArray());
+                this.btnReiniciar.addEventListener('click', () => this.reiniciar());
+                this.btnAnterior.addEventListener('click', () => this.pasoAnterior());
+                this.btnSiguiente.addEventListener('click', () => this.siguientePaso());
+                this.inputBuscar.addEventListener('input', () => {
+                    const value = parseInt(this.inputBuscar.value);
+                    if (!isNaN(value)) {
+                        this.objetivo = value;
+                    }
+                });
+            }
+
+            generarArray() {
+                // Generar un array de 10 elementos con números aleatorios entre 1 y 20
+                this.array = [];
+                for (let i = 0; i < 10; i++) {
+                    this.array.push(Math.floor(Math.random() * 20) + 1);
+                }
+                
+                // Actualizar la visualización
+                this.actualizarVisualizacionArray();
+                
+                // Reiniciar la simulación
+                this.reiniciar();
+            }
+
+            actualizarVisualizacionArray() {
+                // Limpiar el contenedor
+                this.arrayVisual.innerHTML = '';
+                
+                // Crear elementos visuales para cada elemento del array
+                for (let i = 0; i < this.array.length; i++) {
+                    const elemento = document.createElement('div');
+                    elemento.className = 'array-element';
+                    elemento.id = `element-${i}`;
+                    elemento.innerHTML = `
+                        <div class="array-index">${i}</div>
+                        ${this.array[i]}
+                    `;
+                    this.arrayVisual.appendChild(elemento);
+                }
+                
+                // Actualizar el texto del array
+                this.arrayText.textContent = `[${this.array.join(', ')}]`;
+            }
+
+            reiniciar() {
+                this.objetivo = parseInt(this.inputBuscar.value) || 7;
+                this.posicionActual = 0;
+                this.resultadoBusqueda = -1;
+                this.encontrado = false;
+                this.currentStep = 0;
+                this.totalSteps = this.array.length + 1; // N comparaciones + 1 paso final
+                this.stepsHistory = []; // Limpiar historial
+
+                this.resetAll();
+                this.pasoEl.textContent = "Estado inicial. Presiona 'Siguiente' para comenzar la búsqueda.";
+                this.resultadoEl.textContent = "...";
+                this.resultMessage.textContent = "La búsqueda aún no ha comenzado.";
+                this.resultBox.className = "result-box";
+                this.updateUI();
+            }
+
+            resetAll() {
+                // Resetear código
+                document.querySelectorAll('.code-line.highlight').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+
+                // Resetear elementos del array
+                for (let i = 0; i < this.array.length; i++) {
+                    const elemento = document.getElementById(`element-${i}`);
+                    if (elemento) {
+                        elemento.className = 'array-element';
+                    }
+                }
+            }
+
+            async siguientePaso() {
+                if (this.currentStep < this.totalSteps) {
+                    // Guardar estado actual en el historial antes de avanzar
+                    this.guardarEstadoActual();
+                    
+                    this.currentStep++;
+                    await this.ejecutarPaso(true);
+                }
+            }
+
+            async pasoAnterior() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    await this.ejecutarPaso(false);
+                }
+            }
+
+            guardarEstadoActual() {
+                // Guardar el estado actual para poder retroceder correctamente
+                const estado = {
+                    posicionActual: this.posicionActual,
+                    encontrado: this.encontrado,
+                    resultadoBusqueda: this.resultadoBusqueda,
+                    currentStep: this.currentStep
+                };
+                this.stepsHistory[this.currentStep] = {...estado};
+            }
+
+            restaurarEstadoAnterior() {
+                if (this.currentStep < this.stepsHistory.length && this.stepsHistory[this.currentStep]) {
+                    const estado = this.stepsHistory[this.currentStep];
+                    this.posicionActual = estado.posicionActual;
+                    this.encontrado = estado.encontrado;
+                    this.resultadoBusqueda = estado.resultadoBusqueda;
+                }
+            }
+
+            async ejecutarPaso(isForward) {
+                this.resetAll();
+
+                // Si vamos hacia atrás, restaurar el estado guardado
+                if (!isForward) {
+                    this.restaurarEstadoAnterior();
+                }
+
+                // Paso 0: Inicial
+                if (this.currentStep === 0) {
+                    this.pasoEl.textContent = "Estado inicial. Presiona 'Siguiente' para comenzar la búsqueda.";
+                    this.updateUI();
+                    return;
+                }
+
+                // Si estamos en los pasos de comparación (1 hasta array.length)
+                if (this.currentStep <= this.array.length) {
+                    this.posicionActual = this.currentStep - 1;
+                    
+                    // Resaltar la línea del for (índice actual)
+                    this.lineFor.classList.add('highlight');
+                    
+                    // Resaltar el elemento actual en el array
+                    const elementoActual = document.getElementById(`element-${this.posicionActual}`);
+                    if (elementoActual) {
+                        elementoActual.classList.add('highlight');
+                    }
+                    
+                    // Comparar el elemento actual con el objetivo
+                    if (this.array[this.posicionActual] === this.objetivo) {
+                        // ¡Elemento encontrado!
+                        this.lineIf.classList.add('highlight');
+                        this.lineReturn.classList.add('highlight');
+                        
+                        // Solo actualizar si vamos hacia adelante
+                        if (isForward) {
+                            this.encontrado = true;
+                            this.resultadoBusqueda = this.posicionActual;
+                        }
+                        
+                        this.pasoEl.textContent = `Paso ${this.currentStep}: ¡Elemento ${this.objetivo} encontrado en la posición ${this.posicionActual}!`;
+                        
+                        if (elementoActual) {
+                            elementoActual.classList.remove('highlight');
+                            elementoActual.classList.add('found');
+                        }
+                        
+                        // Mostrar resultado
+                        this.resultadoEl.textContent = `Posición: ${this.posicionActual}`;
+                        this.resultMessage.textContent = `¡Éxito! El elemento ${this.objetivo} se encuentra en la posición ${this.posicionActual}.`;
+                        this.resultBox.className = "result-box result-found";
+                        
+                        // Si vamos hacia adelante, saltamos al final
+                        if (isForward) {
+                            // Guardar el estado antes de saltar
+                            this.guardarEstadoActual();
+                            this.currentStep = this.totalSteps;
+                            await this.ejecutarPaso(true);
+                            return;
+                        }
+                    } else {
+                        // Elemento no coincide
+                        this.lineIf.classList.add('highlight');
+                        this.pasoEl.textContent = `Paso ${this.currentStep}: Comparando posición ${this.posicionActual} (valor: ${this.array[this.posicionActual]}) con ${this.objetivo}. No coincide.`;
+                        
+                        // Mostrar resultado temporal
+                        this.resultadoEl.textContent = "Buscando...";
+                        this.resultMessage.textContent = `Comparando... posición ${this.posicionActual} no contiene el valor buscado.`;
+                        this.resultBox.className = "result-box";
+                    }
+                    
+                    if (isForward) {
+                        await this.sleep(800);
+                    }
+                } else {
+                    // Paso final: Verificar si se encontró el elemento
+                    
+                    if (this.encontrado) {
+                        // Elemento fue encontrado - resaltar la línea de return i (línea 7)
+                        this.lineReturn.classList.add('highlight');
+                        
+                        this.pasoEl.textContent = `Búsqueda completada: Elemento ${this.objetivo} encontrado en la posición ${this.resultadoBusqueda}.`;
+                        this.resultadoEl.textContent = `Posición: ${this.resultadoBusqueda}`;
+                        this.resultMessage.textContent = `¡Éxito! El elemento ${this.objetivo} se encuentra en la posición ${this.resultadoBusqueda}.`;
+                        this.resultBox.className = "result-box result-found";
+                        
+                        // Resaltar el elemento encontrado
+                        const elementoEncontrado = document.getElementById(`element-${this.resultadoBusqueda}`);
+                        if (elementoEncontrado) {
+                            elementoEncontrado.classList.remove('highlight');
+                            elementoEncontrado.classList.add('found');
+                        }
+                    } else {
+                        // Elemento no encontrado - resaltar la línea de return -1 (línea 10)
+                        this.lineNotfound.classList.add('highlight');
+                        
+                        this.pasoEl.textContent = "Búsqueda completada: Elemento no encontrado en el array.";
+                        this.resultadoEl.textContent = "-1";
+                        this.resultMessage.textContent = `El elemento ${this.objetivo} no se encuentra en el array.`;
+                        this.resultBox.className = "result-box result-not-found";
+                        
+                        // Resaltar todos los elementos como no encontrados
+                        for (let i = 0; i < this.array.length; i++) {
+                            const elemento = document.getElementById(`element-${i}`);
+                            if (elemento) {
+                                elemento.classList.add('not-found');
+                            }
+                        }
+                    }
+                }
+
+                this.updateUI();
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            updateUI() {
+                // Actualizar botones
+                this.btnAnterior.disabled = this.currentStep === 0;
+                this.btnSiguiente.disabled = this.currentStep === this.totalSteps;
+
+                // Actualizar barra de progreso
+                const progress = (this.currentStep / this.totalSteps) * 100;
+                this.pasoProgress.style.width = `${progress}%`;
+            }
+        }
+
+        // Inicializar simulación al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            new BusquedaSecuencialSimulator();
+        });
+    </script>
+</body>
+</html>

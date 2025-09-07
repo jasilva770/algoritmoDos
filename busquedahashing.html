@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmo de Búsqueda por Transformación de Claves - Simulador Interactivo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h2, h3 {
+            color: #2c3e50;
+        }
+        
+        h2 {
+            border-bottom: 2px solid #673AB7;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .example-container {
+            margin: 2rem 0;
+        }
+
+        .code-and-array {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .code-box, .array-box {
+            flex: 1;
+            min-width: 340px;
+            box-sizing: border-box;
+        }
+
+        .code-box pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-line {
+            display: block;
+            padding: 3px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .code-line.highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-left: 5px solid #ffc107;
+            padding-left: 15px;
+            margin-left: -15px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
+        }
+
+        .array-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .array-box h3 {
+            margin-top: 0;
+            color: #673AB7;
+        }
+
+        .hash-table-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 2rem 0;
+        }
+
+        .hash-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 5px 0;
+        }
+
+        .hash-index {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #673AB7;
+            color: white;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .hash-bucket {
+            flex: 1;
+            min-height: 40px;
+            background: #EDE7F6;
+            border-radius: 8px;
+            padding: 5px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+            border: 2px dashed #B39DDB;
+            transition: all 0.3s ease;
+        }
+
+        .hash-element {
+            padding: 5px 12px;
+            background: #9FA8DA;
+            color: white;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Estados de elementos */
+        .hash-element.searching {
+            background: #FF9800;
+            border: 2px solid #F57C00;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.7);
+        }
+
+        .hash-element.found {
+            background: #4CAF50;
+            border: 2px solid #2E7D32;
+            animation: pulse 0.8s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+            transform: scale(1.15);
+        }
+
+        .hash-element.collided {
+            background: #FF5722;
+            border: 2px solid #D84315;
+            box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+        }
+
+        .hash-bucket.active {
+            border: 2px solid #673AB7;
+            background: #D1C4E9;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(103, 58, 183, 0.3);
+        }
+
+        .hash-bucket.empty {
+            background: #F3E5F5;
+            border-style: dashed;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1.1); box-shadow: 0 0 15px rgba(76, 175, 80, 0.7); }
+            50% { transform: scale(1.2); box-shadow: 0 0 25px rgba(76, 175, 80, 1); }
+            100% { transform: scale(1.1); box-shadow: 0 0 15px rgba(76, 175, 80, 0.7); }
+        }
+
+        .simulation-box {
+            background: linear-gradient(135deg, #ede7f6, #d1c4e9);
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 6px 12px rgba(103, 58, 183, 0.2);
+        }
+
+        .simulation-controls {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #673AB7;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #512DA8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #input-buscar {
+            padding: 0.6rem;
+            font-size: 1.1rem;
+            border: 2px solid #B39DDB;
+            border-radius: 8px;
+            width: 140px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #input-buscar:focus {
+            outline: none;
+            border-color: #673AB7;
+            box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.3);
+        }
+
+        .paso-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #paso-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #673AB7);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .result-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #673AB7;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .result-found {
+            border-left-color: #4CAF50;
+        }
+
+        .result-not-found {
+            border-left-color: #F44336;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .legend-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 6px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .step-explanation {
+            background: #e8f5e9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #4CAF50;
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .key-concept {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #2196F3;
+        }
+
+        .hash-calculation {
+            background: #fff3e0;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border: 2px solid #ffb74d;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .code-and-array {
+                flex-direction: column;
+            }
+            .array-box {
+                margin-top: 1.5rem;
+            }
+            .simulation-controls {
+                justify-content: center;
+            }
+            .hash-element {
+                padding: 4px 10px;
+                font-size: 0.8rem;
+            }
+            .legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <h3>📌 ¿Qué es la Transformación de Claves (Hashing)?</h3>
+        <p>La <strong>búsqueda por transformación de claves</strong> (hashing) es un método que utiliza una <strong>función de hash</strong> para transformar una clave en una dirección o índice directo en una tabla.</p>
+        
+        <div class="key-concept">
+            <h4>🔑 ¿Qué es una "clave"?</h4>
+            <p>Una clave es el valor que queremos buscar, almacenar o recuperar. Por ejemplo:</p>
+            <ul>
+                <li>En una base de datos de estudiantes, la clave podría ser el número de matrícula</li>
+                <li>En un diccionario, la clave sería la palabra que buscamos</li>
+                <li>En esta simulación, ¡la clave es el número que ingresas en el campo de búsqueda!</li>
+            </ul>
+        </div>
+
+        <div class="key-concept">
+            <h4>🧮 ¿Para qué sirve la función hash?</h4>
+            <p>La función hash <strong>transforma la clave en un índice</strong> de la tabla. En nuestro caso, usamos la fórmula:</p>
+            <p style="text-align: center; font-size: 1.2rem; font-weight: bold;">
+                <code>índice = clave % tamaño_de_la_tabla</code>
+            </p>
+            <p>Esto nos permite <strong>acceder directamente</strong> a la ubicación donde debería estar almacenada la clave, ¡sin tener que buscar en toda la tabla!</p>
+        </div>
+        
+        <h3>🌍 Analogía del mundo real</h3>
+        <p>Imagina que tienes una biblioteca con estanterías numeradas. En lugar de buscar libro por libro, usas una fórmula: <em>"El libro con ISBN 12345 lo encontrarás en la estantería (12345 % 10) = 5"</em>. ¡Así vas directamente a la estantería correcta!</p>
+
+        <h3>✅ Ventajas</h3>
+        <ul>
+            <li>Acceso directo: O(1) en el caso promedio.</li>
+            <li>Muy eficiente para búsquedas, inserciones y eliminaciones.</li>
+            <li>Ideal cuando se necesita acceso rápido a grandes volúmenes de datos.</li>
+        </ul>
+
+        <h3>❌ Desventajas</h3>
+        <ul>
+            <li>Requiere manejo de colisiones (dos claves que generan el mismo índice).</li>
+            <li>El espacio de memoria debe ser predefinido.</li>
+            <li>Las claves deben ser adecuadas para la función de hash.</li>
+        </ul>
+    </section>
+    <h2>🔹 Algoritmo de Búsqueda por Transformación de Claves</h2>
+
+    <section class="simulation-box">
+        <h3>▶️ Simulación Interactiva - Paso a Paso</h3>
+        <p>Ingresa una <strong>clave (número)</strong> que deseas buscar en la tabla hash, luego usa los botones para avanzar o retroceder en la ejecución.</p>
+        
+        <div class="simulation-controls">
+            <input type="number" id="input-buscar" value="15" placeholder="Ingresa una clave">
+            <button id="btn-generar" class="btn">🔄 Generar Nueva Tabla</button>
+            <button id="btn-reiniciar" class="btn">🔁 Reiniciar</button>
+            <button id="btn-anterior" class="btn" disabled>⬅️ Anterior</button>
+            <button id="btn-siguiente" class="btn">Siguiente ➡️</button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #9FA8DA; border-color: white;"></div>
+                <span>Elemento normal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF9800; border-color: #F57C00;"></div>
+                <span>Buscando (Naranja)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4CAF50; border-color: #2E7D32;"></div>
+                <span>Encontrado (Verde)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF5722; border-color: #D84315;"></div>
+                <span>Colisión (Rojo anaranjado)</span>
+            </div>
+        </div>
+
+        <div id="output-simulacion">
+            <div id="step-explanation" class="step-explanation">
+                ¡Bienvenido a la simulación interactiva de Búsqueda por Transformación de Claves!<br><br>
+                Ingresa una clave (número) en el campo de arriba y presiona "Siguiente" para ver cómo se transforma en un índice y se busca en la tabla hash.
+            </div>
+            <div id="hash-calculation" class="hash-calculation" style="display: none;">
+                <!-- Aquí se mostrará el cálculo del hash -->
+            </div>
+            <p><strong>Salida:</strong> <span id="resultado">...</span></p>
+            <p><strong>Paso actual:</strong> <span id="paso">Esperando inicio...</span></p>
+            <div id="paso-indicator" class="paso-bar">
+                <div id="paso-progress"></div>
+            </div>
+            <div id="result-box" class="result-box">
+                <p id="result-message">Ingresa una clave y presiona "Reiniciar" para comenzar la búsqueda.</p>
+            </div>
+        </div>
+    </section>
+
+<section class="example-container">
+        <div class="code-and-array">
+            <!-- Código Java -->
+            <div class="code-box">
+                <h3>💻 Ejemplo Completo: Búsqueda por Transformación de Claves en Java (con main)</h3>
+                <pre><code><span class="code-line" data-line="1">import java.util.*;</span>
+<span class="code-line" data-line="2"></span>
+<span class="code-line" data-line="3">public class HashSearch {</span>
+<span class="code-line" data-line="4">    private List<List<Integer>> tabla;  // Estructura de tabla hash con encadenamiento</span>
+<span class="code-line" data-line="5">    private int tamano;  // Tamaño de la tabla hash</span>
+<span class="code-line" data-line="6">    </span>
+<span class="code-line" data-line="7">    // Constructor: inicializa la tabla hash</span>
+<span class="code-line" data-line="8">    public HashSearch(int tamano) {</span>
+<span class="code-line highlightable" data-line="9" id="line-init">        this.tamano = tamano;  // Guarda el tamaño de la tabla</span>
+<span class="code-line highlightable" data-line="10" id="line-create">        this.tabla = new ArrayList<>(tamano);  // Crea la estructura de la tabla</span>
+<span class="code-line highlightable" data-line="11" id="line-init-loop">        for (int i = 0; i < tamano; i++) {  // Inicializa cada bucket</span>
+<span class="code-line highlightable" data-line="12" id="line-init-bucket">            tabla.add(new LinkedList<>());  // Añade una lista vacía para cada posición</span>
+<span class="code-line" data-line="13">        }</span>
+<span class="code-line" data-line="14">    }</span>
+<span class="code-line" data-line="15">    </span>
+<span class="code-line" data-line="16">    // Función de hash: transforma la clave en un índice</span>
+<span class="code-line highlightable" data-line="17" id="line-hash-func">    private int funcionHash(int clave) {</span>
+<span class="code-line highlightable" data-line="18" id="line-hash-calc">        return clave % tamano;  // Usa el módulo para garantizar índice válido</span>
+<span class="code-line" data-line="19">    }</span>
+<span class="code-line" data-line="20">    </span>
+<span class="code-line" data-line="21">    // Método principal de búsqueda</span>
+<span class="code-line highlightable" data-line="22" id="line-search-method">    public boolean buscar(int clave) {</span>
+<span class="code-line highlightable" data-line="23" id="line-hash-call">        int indice = funcionHash(clave);  // Calcula el índice usando la función hash</span>
+<span class="code-line highlightable" data-line="24" id="line-get-bucket">        List<Integer> bucket = tabla.get(indice);  // Obtiene la lista en ese índice</span>
+<span class="code-line highlightable" data-line="25" id="line-iterate">        for (int i = 0; i < bucket.size(); i++) {  // Recorre todos los elementos en el bucket</span>
+<span class="code-line highlightable" data-line="26" id="line-compare">            if (bucket.get(i) == clave) {  // Compara cada elemento con la clave buscada</span>
+<span class="code-line highlightable" data-line="27" id="line-return-true">                return true;  // ¡Elemento encontrado!</span>
+<span class="code-line" data-line="28">            }</span>
+<span class="code-line" data-line="29">        }</span>
+<span class="code-line highlightable" data-line="30" id="line-return-false">        return false;  // Elemento no encontrado en este bucket</span>
+<span class="code-line" data-line="31">    }</span>
+<span class="code-line" data-line="32">    </span>
+<span class="code-line" data-line="33">    // Método auxiliar para insertar elementos</span>
+<span class="code-line highlightable" data-line="34" id="line-insert-method">    public void insertar(int clave) {</span>
+<span class="code-line highlightable" data-line="35" id="line-insert-hash">        int indice = funcionHash(clave);  // Calcula el índice para la clave</span>
+<span class="code-line highlightable" data-line="36" id="line-insert-bucket">        tabla.get(indice).add(clave);  // Añade la clave al bucket correspondiente</span>
+<span class="code-line" data-line="37">    }</span>
+<span class="code-line" data-line="38">    </span>
+<span class="code-line" data-line="39">    // Método main para probar el algoritmo</span>
+<span class="code-line highlightable" data-line="40" id="line-main">    public static void main(String[] args) {</span>
+<span class="code-line highlightable" data-line="41" id="line-create-instance">        HashSearch hashTable = new HashSearch(7);  // Crear tabla hash de tamaño 7</span>
+<span class="code-line highlightable" data-line="42" id="line-insert1">        hashTable.insertar(15);  // Insertar elementos de prueba</span>
+<span class="code-line highlightable" data-line="43" id="line-insert2">        hashTable.insertar(22);</span>
+<span class="code-line highlightable" data-line="44" id="line-insert3">        hashTable.insertar(8);</span>
+<span class="code-line highlightable" data-line="45" id="line-insert4">        hashTable.insertar(36);</span>
+<span class="code-line highlightable" data-line="46" id="line-insert5">        hashTable.insertar(17);</span>
+<span class="code-line highlightable" data-line="47" id="line-search1">        boolean encontrado = hashTable.buscar(15);  // Buscar elemento 15</span>
+<span class="code-line highlightable" data-line="48" id="line-if-result">        if (encontrado) {</span>
+<span class="code-line highlightable" data-line="49" id="line-print-found">            System.out.println("Elemento 15 encontrado");</span>
+<span class="code-line" data-line="50">        } else {</span>
+<span class="code-line highlightable" data-line="51" id="line-print-notfound">            System.out.println("Elemento 15 no encontrado");</span>
+<span class="code-line" data-line="52">        }</span>
+<span class="code-line" data-line="53">    }</span>
+<span class="code-line" data-line="54">}</span></code></pre>
+            </div>
+
+            <!-- Representación de la Tabla Hash -->
+            <div class="array-box">
+                <h3>📊 Representación Visual de la Tabla Hash</h3>
+                <div class="hash-table-container" id="hash-table-visual">
+                    <!-- Los elementos de la tabla hash se generarán dinámicamente -->
+                </div>
+                <p><strong>Tamaño de tabla:</strong> <span id="table-size">7</span></p>
+                <div class="key-concept">
+                    <h4>🔍 ¿Cómo funciona la búsqueda?</h4>
+                    <ol>
+                        <li>Ingresa una clave (el número que quieres buscar)</li>
+                        <li>La función hash la transforma en un índice: <code>clave % 7</code></li>
+                        <li>La búsqueda se realiza SOLO en ese índice específico</li>
+                        <li>¡No se busca en toda la tabla, solo en la ubicación calculada!</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class HashSearchSimulator {
+            constructor() {
+                this.currentStep = 0;
+                this.tableSize = 7;
+                this.hashTable = [];
+                this.objetivo = 15;
+                this.currentIndex = -1;
+                this.currentElementIndex = -1;
+                this.encontrado = false;
+                this.stepsHistory = [];
+                this.currentLine = null;
+                this.currentBucket = [];
+                
+                // Definir los pasos de la simulación con explicaciones claras y educativas
+                this.steps = [
+                    { 
+                        phase: "intro", 
+                        action: "welcome", 
+                        line: null, 
+                        explanation: `¡Comencemos la simulación de Búsqueda por Transformación de Claves!<br><br>
+                                      Has ingresado la clave <strong>${this.objetivo}</strong>. En el hashing, una clave es el valor que queremos buscar.<br>
+                                      Ahora veremos cómo esta clave se transforma en un índice de tabla mediante la función hash.`,
+                        highlightTable: false
+                    },
+                    { 
+                        phase: "main", 
+                        action: "start", 
+                        line: "line-main", 
+                        explanation: "Iniciamos la ejecución desde el método main. Este es el punto de entrada del programa.",
+                        highlightTable: false
+                    },
+                    { 
+                        phase: "main", 
+                        action: "createInstance", 
+                        line: "line-create-instance", 
+                        explanation: `Creamos una instancia de HashSearch con tamaño ${this.tableSize}. Esto inicializa nuestra tabla hash vacía con ${this.tableSize} posiciones.`,
+                        highlightTable: false
+                    },
+                    { 
+                        phase: "main", 
+                        action: "insert1", 
+                        line: "line-insert1", 
+                        explanation: "Insertamos el elemento 15 en la tabla hash. La función hash determinará en qué posición se almacenará.",
+                        highlightTable: true,
+                        value: 15
+                    },
+                    { 
+                        phase: "main", 
+                        action: "insert2", 
+                        line: "line-insert2", 
+                        explanation: "Insertamos el elemento 22 en la tabla hash.",
+                        highlightTable: true,
+                        value: 22
+                    },
+                    { 
+                        phase: "main", 
+                        action: "insert3", 
+                        line: "line-insert3", 
+                        explanation: "Insertamos el elemento 8 en la tabla hash.",
+                        highlightTable: true,
+                        value: 8
+                    },
+                    { 
+                        phase: "main", 
+                        action: "insert4", 
+                        line: "line-insert4", 
+                        explanation: "Insertamos el elemento 36 en la tabla hash.",
+                        highlightTable: true,
+                        value: 36
+                    },
+                    { 
+                        phase: "main", 
+                        action: "insert5", 
+                        line: "line-insert5", 
+                        explanation: "Insertamos el elemento 17 en la tabla hash.",
+                        highlightTable: true,
+                        value: 17
+                    },
+                    { 
+                        phase: "main", 
+                        action: "search", 
+                        line: "line-search1", 
+                        explanation: "",
+                        highlightTable: false,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "search", 
+                        action: "start", 
+                        line: "line-search-method", 
+                        explanation: "",
+                        highlightTable: false,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "search", 
+                        action: "calculating", 
+                        line: "line-hash-call", 
+                        explanation: "",
+                        highlightTable: false,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "search", 
+                        action: "calculating", 
+                        line: "line-hash-func", 
+                        explanation: "Entramos en la función hash, que transformará nuestra clave en un índice de tabla.",
+                        highlightTable: false
+                    },
+                    { 
+                        phase: "search", 
+                        action: "calculating", 
+                        line: "line-hash-calc", 
+                        explanation: "",
+                        highlightTable: false,
+                        dynamicExplanation: true,
+                        showCalculation: true
+                    },
+                    { 
+                        phase: "search", 
+                        action: "accessing", 
+                        line: "line-get-bucket", 
+                        explanation: "",
+                        highlightTable: true,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "search", 
+                        action: "searching", 
+                        line: "line-iterate", 
+                        explanation: "",
+                        highlightTable: true,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "search", 
+                        action: "comparing", 
+                        line: "line-compare", 
+                        explanation: "",
+                        highlightTable: true,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "search", 
+                        action: "result", 
+                        line: "line-return-true", 
+                        explanation: "",
+                        highlightTable: true,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "search", 
+                        action: "notFound", 
+                        line: "line-return-false", 
+                        explanation: "",
+                        highlightTable: true,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "main", 
+                        action: "checkResult", 
+                        line: "line-if-result", 
+                        explanation: "Verificamos el resultado de la búsqueda para determinar qué mensaje mostrar.",
+                        highlightTable: false
+                    },
+                    { 
+                        phase: "main", 
+                        action: "printFound", 
+                        line: "line-print-found", 
+                        explanation: "",
+                        highlightTable: false,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "main", 
+                        action: "printNotFound", 
+                        line: "line-print-notfound", 
+                        explanation: "",
+                        highlightTable: false,
+                        dynamicExplanation: true
+                    },
+                    { 
+                        phase: "complete", 
+                        action: "end", 
+                        line: null, 
+                        explanation: "¡Simulación completada! Has visto cómo la transformación de claves permite encontrar elementos de forma eficiente transformando la clave en un índice directo.",
+                        highlightTable: false
+                    }
+                ];
+
+                this.initializeElements();
+                this.bindEvents();
+                this.generarTabla();
+                this.reiniciar();
+            }
+
+            initializeElements() {
+                // Controles
+                this.inputBuscar = document.getElementById('input-buscar');
+                this.btnGenerar = document.getElementById('btn-generar');
+                this.btnReiniciar = document.getElementById('btn-reiniciar');
+                this.btnAnterior = document.getElementById('btn-anterior');
+                this.btnSiguiente = document.getElementById('btn-siguiente');
+                this.stepExplanation = document.getElementById('step-explanation');
+                this.hashCalculation = document.getElementById('hash-calculation');
+
+                // Salida
+                this.resultadoEl = document.getElementById('resultado');
+                this.pasoEl = document.getElementById('paso');
+                this.pasoProgress = document.getElementById('paso-progress');
+                this.resultBox = document.getElementById('result-box');
+                this.resultMessage = document.getElementById('result-message');
+                this.tableSizeEl = document.getElementById('table-size');
+
+                // Todas las líneas de código
+                this.codeLines = {};
+                const lineIds = [
+                    'line-init', 'line-create', 'line-init-loop', 'line-init-bucket',
+                    'line-hash-func', 'line-hash-calc', 'line-search-method', 'line-hash-call',
+                    'line-get-bucket', 'line-iterate', 'line-compare', 'line-return-true',
+                    'line-return-false', 'line-insert-method', 'line-insert-hash', 'line-insert-bucket',
+                    'line-main', 'line-create-instance', 'line-insert1', 'line-insert2',
+                    'line-insert3', 'line-insert4', 'line-insert5', 'line-search1',
+                    'line-if-result', 'line-print-found', 'line-print-notfound'
+                ];
+                
+                lineIds.forEach(id => {
+                    this.codeLines[id] = document.getElementById(id);
+                });
+
+                // Tabla hash visual
+                this.hashTableVisual = document.getElementById('hash-table-visual');
+            }
+
+            bindEvents() {
+                this.btnGenerar.addEventListener('click', () => this.generarTabla());
+                this.btnReiniciar.addEventListener('click', () => this.reiniciar());
+                this.btnAnterior.addEventListener('click', () => this.pasoAnterior());
+                this.btnSiguiente.addEventListener('click', () => this.siguientePaso());
+                this.inputBuscar.addEventListener('input', () => {
+                    const value = parseInt(this.inputBuscar.value);
+                    if (!isNaN(value)) {
+                        this.objetivo = value;
+                        // Actualizar explicaciones que dependen del objetivo
+                        this.actualizarExplicacionesDependientes();
+                    }
+                });
+            }
+
+            actualizarExplicacionesDependientes() {
+                // Actualizar el paso de introducción
+                if (this.steps.length > 0) {
+                    this.steps[0].explanation = `¡Comencemos la simulación de Búsqueda por Transformación de Claves!<br><br>
+                                      Has ingresado la clave <strong>${this.objetivo}</strong>. En el hashing, una clave es el valor que queremos buscar.<br>
+                                      Ahora veremos cómo esta clave se transforma en un índice de tabla mediante la función hash.`;
+                }
+                
+                // Actualizar el paso de búsqueda
+                if (this.steps.length > 8) {
+                    this.steps[8].dynamicExplanation = true;
+                }
+            }
+
+            generarTabla() {
+                // Reiniciar la tabla
+                this.hashTable = [];
+                
+                // Crear buckets vacíos
+                for (let i = 0; i < this.tableSize; i++) {
+                    this.hashTable.push([]);
+                }
+                
+                // Generar números incluyendo algunos fijos y otros aleatorios
+                const numerosFijos = [15, 22, 8, 36, 17]; // Los que se insertan en el main
+                
+                // Insertar los números fijos
+                for (let num of numerosFijos) {
+                    const index = num % this.tableSize;
+                    this.hashTable[index].push(num);
+                }
+                
+                // Añadir números aleatorios, asegurando que haya variedad
+                for (let i = 0; i < 10; i++) {
+                    let num;
+                    do {
+                        num = Math.floor(Math.random() * 50) + 1;
+                    } while (numerosFijos.includes(num) && i < 5); // Evitar duplicados de los fijos al principio
+                    
+                    const index = num % this.tableSize;
+                    this.hashTable[index].push(num);
+                }
+                
+                // Actualizar la visualización
+                this.actualizarVisualizacionTabla();
+                
+                // Reiniciar la simulación
+                this.reiniciar();
+            }
+
+            actualizarVisualizacionTabla() {
+                // Actualizar tamaño
+                this.tableSizeEl.textContent = this.tableSize;
+                
+                // Limpiar el contenedor
+                this.hashTableVisual.innerHTML = '';
+                
+                // Crear elementos visuales para cada bucket de la tabla
+                for (let i = 0; i < this.tableSize; i++) {
+                    const row = document.createElement('div');
+                    row.className = 'hash-row';
+                    
+                    // Índice del bucket
+                    const indexElement = document.createElement('div');
+                    indexElement.className = 'hash-index';
+                    indexElement.textContent = i;
+                    row.appendChild(indexElement);
+                    
+                    // Contenedor del bucket
+                    const bucketElement = document.createElement('div');
+                    bucketElement.className = 'hash-bucket';
+                    bucketElement.id = `bucket-${i}`;
+                    
+                    if (this.hashTable[i].length === 0) {
+                        bucketElement.classList.add('empty');
+                    }
+                    
+                    // Añadir elementos al bucket
+                    for (let j = 0; j < this.hashTable[i].length; j++) {
+                        const element = document.createElement('div');
+                        element.className = 'hash-element';
+                        element.id = `element-${i}-${j}`;
+                        element.textContent = this.hashTable[i][j];
+                        
+                        // Si hay más de un elemento en el bucket, marcar como colisión
+                        if (this.hashTable[i].length > 1) {
+                            element.classList.add('collided');
+                        }
+                        
+                        bucketElement.appendChild(element);
+                    }
+                    
+                    row.appendChild(bucketElement);
+                    this.hashTableVisual.appendChild(row);
+                }
+            }
+
+            reiniciar() {
+                this.objetivo = parseInt(this.inputBuscar.value) || 15;
+                this.currentIndex = -1;
+                this.currentElementIndex = -1;
+                this.encontrado = false;
+                this.currentStep = 0;
+                this.stepsHistory = [];
+
+                // Actualizar explicaciones que dependen del objetivo
+                this.actualizarExplicacionesDependientes();
+
+                this.resetAll();
+                this.hashCalculation.style.display = "none";
+                this.stepExplanation.innerHTML = `¡Bienvenido a la simulación interactiva de Búsqueda por Transformación de Claves!<br><br>
+                    Ingresa una clave (número) en el campo de arriba y presiona "Siguiente" para ver cómo se transforma en un índice y se busca en la tabla hash.`;
+                this.pasoEl.textContent = "Esperando inicio...";
+                this.resultadoEl.textContent = "...";
+                this.resultMessage.textContent = "Ingresa una clave y presiona 'Reiniciar' para comenzar la búsqueda.";
+                this.resultBox.className = "result-box";
+                this.updateUI();
+            }
+
+            resetAll() {
+                // Resetear código - QUITAR TODOS los highlights
+                document.querySelectorAll('.code-line.highlight').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+
+                // Resetear elementos de la tabla
+                for (let i = 0; i < this.tableSize; i++) {
+                    const bucketElement = document.getElementById(`bucket-${i}`);
+                    if (bucketElement) {
+                        bucketElement.classList.remove('active');
+                    }
+                    
+                    for (let j = 0; j < (this.hashTable[i]?.length || 0); j++) {
+                        const element = document.getElementById(`element-${i}-${j}`);
+                        if (element) {
+                            element.className = 'hash-element';
+                            if (this.hashTable[i].length > 1) {
+                                element.classList.add('collided');
+                            }
+                        }
+                    }
+                }
+            }
+
+            actualizarIndicadoresTabla() {
+                // Primero resetear todo
+                for (let i = 0; i < this.tableSize; i++) {
+                    const bucketElement = document.getElementById(`bucket-${i}`);
+                    if (bucketElement) {
+                        bucketElement.classList.remove('active');
+                    }
+                    
+                    for (let j = 0; j < (this.hashTable[i]?.length || 0); j++) {
+                        const element = document.getElementById(`element-${i}-${j}`);
+                        if (element) {
+                            element.classList.remove('searching', 'found');
+                            if (this.hashTable[i].length > 1) {
+                                element.classList.add('collided');
+                            } else {
+                                element.classList.remove('collided');
+                            }
+                        }
+                    }
+                }
+                
+                // Resaltar bucket actual si hay un índice válido
+                if (this.currentIndex >= 0 && this.currentIndex < this.tableSize) {
+                    const bucketElement = document.getElementById(`bucket-${this.currentIndex}`);
+                    if (bucketElement) {
+                        bucketElement.classList.add('active');
+                    }
+                }
+                
+                // Resaltar elemento actual si se está buscando
+                if (this.currentIndex >= 0 && this.currentElementIndex >= 0 && 
+                    this.currentElementIndex < this.hashTable[this.currentIndex]?.length) {
+                    const element = document.getElementById(`element-${this.currentIndex}-${this.currentElementIndex}`);
+                    if (element) {
+                        element.classList.add('searching');
+                    }
+                }
+                
+                // Si se encontró el elemento, resaltarlo
+                if (this.encontrado && this.currentIndex >= 0 && this.currentElementIndex >= 0) {
+                    const element = document.getElementById(`element-${this.currentIndex}-${this.currentElementIndex}`);
+                    if (element) {
+                        element.classList.remove('searching');
+                        element.classList.add('found');
+                    }
+                }
+            }
+
+            guardarEstadoActual() {
+                const estado = {
+                    currentIndex: this.currentIndex,
+                    currentElementIndex: this.currentElementIndex,
+                    encontrado: this.encontrado,
+                    currentStep: this.currentStep
+                };
+                this.stepsHistory[this.currentStep] = {...estado};
+            }
+
+            restaurarEstadoAnterior() {
+                if (this.currentStep < this.stepsHistory.length && this.stepsHistory[this.currentStep]) {
+                    const estado = this.stepsHistory[this.currentStep];
+                    this.currentIndex = estado.currentIndex;
+                    this.currentElementIndex = estado.currentElementIndex;
+                    this.encontrado = estado.encontrado;
+                    
+                    // Resetear todo
+                    this.resetAll();
+                    
+                    // Obtener el paso actual
+                    const currentStep = this.steps[this.currentStep];
+                    if (currentStep && currentStep.line && this.codeLines[currentStep.line]) {
+                        this.codeLines[currentStep.line].classList.add('highlight');
+                    }
+                    
+                    // Actualizar indicadores de la tabla
+                    this.actualizarIndicadoresTabla();
+                    
+                    // Actualizar explicación
+                    this.actualizarExplicacion();
+                }
+            }
+
+            async resaltarLinea(lineId, mensaje, duracion = 600) {
+                return new Promise(async (resolve) => {
+                    // Resetear todos los highlights
+                    this.resetAll();
+                    
+                    // Verificar que la línea existe
+                    if (lineId && this.codeLines[lineId]) {
+                        this.codeLines[lineId].classList.add('highlight');
+                    }
+                    
+                    // Actualizar el mensaje
+                    this.pasoEl.textContent = mensaje;
+                    
+                    // Actualizar indicadores de la tabla
+                    this.actualizarIndicadoresTabla();
+                    
+                    // Esperar la duración especificada
+                    await this.sleep(duracion);
+                    resolve();
+                });
+            }
+
+            mostrarCalculoHash() {
+                const hashValue = this.objetivo % this.tableSize;
+                this.hashCalculation.innerHTML = `
+                    <div>🔑 <strong>Clave ingresada:</strong> ${this.objetivo}</div>
+                    <div>🧮 <strong>Función hash:</strong> clave % tamaño_tabla</div>
+                    <div>📊 <strong>Cálculo:</strong> ${this.objetivo} % ${this.tableSize} = ${hashValue}</div>
+                    <div>📍 <strong>Índice resultante:</strong> ${hashValue}</div>
+                `;
+                this.hashCalculation.style.display = "block";
+            }
+
+            ocultarCalculoHash() {
+                this.hashCalculation.style.display = "none";
+            }
+
+            actualizarExplicacion() {
+                const currentStep = this.steps[this.currentStep];
+                if (!currentStep) return;
+                
+                let explanation = currentStep.explanation;
+                
+                // Generar explicaciones dinámicas
+                if (currentStep.dynamicExplanation) {
+                    switch(currentStep.action) {
+                        case "search":
+                            explanation = `Llamamos al método buscar() para encontrar la clave <strong>${this.objetivo}</strong> en la tabla hash.<br><br>
+                                         🔑 Recuerda: En hashing, la "clave" es el valor que queremos buscar. 
+                                         La función hash transformará esta clave en un índice para acceder directamente a la ubicación correcta.`;
+                            break;
+                        case "start":
+                            explanation = `Comenzamos la búsqueda de la clave <strong>${this.objetivo}</strong> en la tabla hash.<br><br>
+                                         El algoritmo intentará encontrar esta clave específica en la posición calculada por la función hash.`;
+                            break;
+                        case "calculating":
+                            if (currentStep.line === "line-hash-call") {
+                                explanation = `Llamamos a la función hash para calcular el índice de la clave <strong>${this.objetivo}</strong>.<br><br>
+                                             Esta es la esencia del hashing: ¡transformar la clave en una ubicación directa!`;
+                            } else if (currentStep.line === "line-hash-calc") {
+                                const hashValue = this.objetivo % this.tableSize;
+                                explanation = `Calculamos el índice usando la fórmula: <strong>${this.objetivo} % ${this.tableSize} = ${hashValue}</strong>.<br><br>
+                                             ¡Esta es la transformación de claves en acción! La clave ${this.objetivo} se transforma en el índice ${hashValue}.<br>
+                                             Ahora buscaremos la clave SOLO en esta posición, no en toda la tabla.`;
+                                this.mostrarCalculoHash();
+                            }
+                            break;
+                        case "accessing":
+                            this.currentIndex = this.objetivo % this.tableSize;
+                            const bucketSize = this.hashTable[this.currentIndex].length;
+                            explanation = `Accedemos al bucket <strong>${this.currentIndex}</strong> (calculado por la función hash).<br><br>
+                                         Este bucket contiene <strong>${bucketSize} elemento(s)</strong>.<br>
+                                         Solo buscaremos aquí, no en toda la tabla, gracias a la transformación de claves.<br>
+                                         ¡Esta es la eficiencia del hashing!`;
+                            break;
+                        case "searching":
+                            if (this.currentElementIndex < this.hashTable[this.currentIndex]?.length) {
+                                explanation = `Revisando elemento <strong>${this.currentElementIndex + 1}</strong> de <strong>${this.hashTable[this.currentIndex].length}</strong> en el bucket <strong>${this.currentIndex}</strong>.<br><br>
+                                             Estamos buscando específicamente la clave <strong>${this.objetivo}</strong>.<br>
+                                             La transformación de claves nos llevó directamente a este bucket, evitando buscar en toda la tabla.`;
+                            } else {
+                                explanation = `Hemos revisado todos los elementos en el bucket <strong>${this.currentIndex}</strong>.<br><br>
+                                             La clave <strong>${this.objetivo}</strong> no se encuentra en su ubicación calculada por la función hash.`;
+                            }
+                            break;
+                        case "comparing":
+                            if (this.currentElementIndex < this.hashTable[this.currentIndex]?.length) {
+                                const currentValue = this.hashTable[this.currentIndex][this.currentElementIndex];
+                                const coincide = currentValue === this.objetivo;
+                                explanation = `Comparando el elemento actual (<strong>${currentValue}</strong>) con la clave buscada (<strong>${this.objetivo}</strong>).<br><br>
+                                             ${coincide ? 
+                                                '¡<span style="color: green; font-weight: bold;">COINCIDEN!</span> Hemos encontrado la clave en su ubicación calculada por la función hash.' : 
+                                                '<span style="color: red;">NO COINCIDEN.</span> Continuamos buscando en este bucket.'}`;
+                            }
+                            break;
+                        case "result":
+                            explanation = `¡ÉXITO! Hemos encontrado la clave <strong>${this.objetivo}</strong> en el bucket <strong>${this.currentIndex}</strong>, posición <strong>${this.currentElementIndex}</strong>.<br><br>
+                                         Esto demuestra el poder de la transformación de claves: ¡fuimos directamente a la ubicación correcta gracias a la función hash!`;
+                            break;
+                        case "notFound":
+                            explanation = `Hemos terminado de buscar en el bucket <strong>${this.currentIndex}</strong> y no encontramos la clave <strong>${this.objetivo}</strong>.<br><br>
+                                         Esto puede deberse a que:<br>
+                                         • La clave no existe en la tabla<br>
+                                         • Hubo una colisión y la clave se almacenó en otro lugar (en implementaciones más complejas)<br>
+                                         En nuestra implementación simple, si no está aquí, no está en la tabla.`;
+                            break;
+                        case "printFound":
+                            explanation = `Imprimimos el mensaje: <strong>"Elemento ${this.objetivo} encontrado"</strong> porque la búsqueda fue exitosa.<br><br>
+                                         ¡La transformación de claves funcionó! La función hash nos llevó directamente a la ubicación correcta.`;
+                            break;
+                        case "printNotFound":
+                            explanation = `Imprimimos el mensaje: <strong>"Elemento ${this.objetivo} no encontrado"</strong> porque la búsqueda no tuvo éxito.<br><br>
+                                         Aunque la transformación de claves nos llevó al bucket correcto, la clave específica no estaba allí.`;
+                            break;
+                    }
+                }
+                
+                this.stepExplanation.innerHTML = explanation;
+            }
+
+            async siguientePaso() {
+                if (this.currentStep >= this.steps.length - 1) return;
+                
+                this.guardarEstadoActual();
+                this.currentStep++;
+                await this.ejecutarPaso(true);
+            }
+
+            async pasoAnterior() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    await this.ejecutarPaso(false);
+                }
+            }
+
+            async ejecutarPaso(isForward) {
+                if (!isForward) {
+                    this.restaurarEstadoAnterior();
+                    return;
+                }
+
+                try {
+                    // Si hemos llegado al final
+                    if (this.currentStep >= this.steps.length) {
+                        return;
+                    }
+
+                    // Obtener el paso actual
+                    const currentStep = this.steps[this.currentStep];
+                    
+                    // Actualizar la explicación
+                    this.actualizarExplicacion();
+                    
+                    // Ejecutar el paso según su fase y acción
+                    if (currentStep.phase === "intro") {
+                        await this.sleep(1000); // Dar tiempo a leer la introducción
+                    }
+                    else if (currentStep.phase === "main") {
+                        await this.ejecutarPasoMain(currentStep);
+                    } 
+                    else if (currentStep.phase === "search") {
+                        await this.ejecutarPasoSearch(currentStep);
+                    } 
+                    else if (currentStep.phase === "complete") {
+                        this.ocultarCalculoHash();
+                        this.stepExplanation.innerHTML = currentStep.explanation;
+                        this.pasoEl.textContent = "Ejecución completada.";
+                        this.btnSiguiente.disabled = true;
+                    }
+                    
+                    this.updateUI();
+                } catch (error) {
+                    console.error("Error en ejecutarPaso:", error);
+                    this.stepExplanation.innerHTML = "Error en la ejecución. Por favor, reinicia la simulación.";
+                }
+            }
+
+            async ejecutarPasoMain(currentStep) {
+                // Resaltar la línea correspondiente
+                if (currentStep.line) {
+                    await this.resaltarLinea(currentStep.line, currentStep.explanation, 800);
+                }
+                
+                // Manejar acciones específicas
+                if (currentStep.action === "insert1" || currentStep.action === "insert2" || 
+                    currentStep.action === "insert3" || currentStep.action === "insert4" || 
+                    currentStep.action === "insert5") {
+                    
+                    // Para las inserciones, obtener el valor del texto de la línea
+                    let value;
+                    if (currentStep.action === "insert1") value = 15;
+                    else if (currentStep.action === "insert2") value = 22;
+                    else if (currentStep.action === "insert3") value = 8;
+                    else if (currentStep.action === "insert4") value = 36;
+                    else if (currentStep.action === "insert5") value = 17;
+                    
+                    // Calcular índice y actualizar visualización
+                    const index = value % this.tableSize;
+                    await this.sleep(500);
+                }
+                
+                // Si es el paso de búsqueda, preparar para la fase de búsqueda
+                if (currentStep.action === "search") {
+                    // No hacer nada adicional, la transición a la fase search se maneja en el flujo principal
+                }
+            }
+
+            async ejecutarPasoSearch(currentStep) {
+                if (currentStep.action === "start") {
+                    await this.resaltarLinea(currentStep.line, currentStep.explanation, 800);
+                }
+                else if (currentStep.action === "calculating") {
+                    await this.resaltarLinea(currentStep.line, this.stepExplanation.textContent, 800);
+                    
+                    // Si es el cálculo del hash, calcular el índice
+                    if (currentStep.line === "line-hash-calc") {
+                        this.currentIndex = this.objetivo % this.tableSize;
+                        // Mostrar el cálculo
+                        this.mostrarCalculoHash();
+                        await this.sleep(1500); // Dar más tiempo para ver el cálculo
+                    }
+                }
+                else if (currentStep.action === "accessing") {
+                    await this.resaltarLinea(currentStep.line, this.stepExplanation.textContent, 800);
+                    this.currentElementIndex = 0;
+                }
+                else if (currentStep.action === "searching") {
+                    // Verificar si el bucket está vacío
+                    if (this.hashTable[this.currentIndex].length === 0) {
+                        // Saltar a no encontrado
+                        this.currentStep = this.steps.findIndex(s => s.action === "notFound" && s.phase === "search");
+                        this.encontrado = false;
+                        await this.ejecutarPaso(true);
+                        return;
+                    }
+                    
+                    // Verificar si hemos revisado todos los elementos
+                    if (this.currentElementIndex >= this.hashTable[this.currentIndex].length) {
+                        // Saltar a no encontrado
+                        this.currentStep = this.steps.findIndex(s => s.action === "notFound" && s.phase === "search");
+                        this.encontrado = false;
+                        await this.ejecutarPaso(true);
+                        return;
+                    }
+                    
+                    await this.resaltarLinea(currentStep.line, this.stepExplanation.textContent, 800);
+                }
+                else if (currentStep.action === "comparing") {
+                    await this.resaltarLinea(currentStep.line, this.stepExplanation.textContent, 800);
+                    
+                    // Comparar el elemento actual con el objetivo
+                    if (this.currentElementIndex < this.hashTable[this.currentIndex].length) {
+                        const currentValue = this.hashTable[this.currentIndex][this.currentElementIndex];
+                        
+                        if (currentValue === this.objetivo) {
+                            // ¡Elemento encontrado!
+                            this.encontrado = true;
+                            this.currentStep = this.steps.findIndex(s => s.action === "result" && s.phase === "search");
+                            await this.ejecutarPaso(true);
+                            return;
+                        } else {
+                            // Continuar con el siguiente elemento
+                            this.currentElementIndex++;
+                            // Volver al paso de searching
+                            this.currentStep = this.steps.findIndex((s, idx) => 
+                                idx > this.currentStep - 1 && s.action === "searching" && s.phase === "search");
+                            this.currentStep--; // Compensar el incremento que hará siguientePaso
+                        }
+                    }
+                }
+                else if (currentStep.action === "result") {
+                    await this.resaltarLinea(currentStep.line, this.stepExplanation.textContent, 1000);
+                    this.ocultarCalculoHash();
+                    this.resultadoEl.textContent = "Encontrado";
+                    this.resultMessage.textContent = `¡Éxito! La clave ${this.objetivo} se encuentra en el bucket ${this.currentIndex}, posición ${this.currentElementIndex}.`;
+                    this.resultBox.className = "result-box result-found";
+                }
+                else if (currentStep.action === "notFound") {
+                    await this.resaltarLinea(currentStep.line, this.stepExplanation.textContent, 1000);
+                    this.ocultarCalculoHash();
+                    this.resultadoEl.textContent = "No encontrado";
+                    this.resultMessage.textContent = `La clave ${this.objetivo} no se encuentra en la tabla.`;
+                    this.resultBox.className = "result-box result-not-found";
+                }
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            updateUI() {
+                // Actualizar botones
+                this.btnAnterior.disabled = this.currentStep === 0;
+                this.btnSiguiente.disabled = this.currentStep >= this.steps.length - 1;
+
+                // Actualizar barra de progreso
+                const progress = (this.currentStep / (this.steps.length - 1)) * 100;
+                this.pasoProgress.style.width = `${Math.min(progress, 100)}%`;
+            }
+        }
+
+        // Inicializar simulación al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            new HashSearchSimulator();
+        });
+    </script>
+</body>
+</html>

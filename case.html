@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructura Condicional switch-case - Animación Completa + FIN</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h2, h3 {
+            color: #2c3e50;
+        }
+        
+        h2 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .example-container {
+            margin: 2rem 0;
+        }
+
+        .code-and-diagram {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .code-box, .diagram-box {
+            flex: 1;
+            min-width: 340px;
+            box-sizing: border-box;
+        }
+
+        .code-box pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-line {
+            display: block;
+            padding: 3px 0;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .code-line.highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-left: 5px solid #ffc107;
+            padding-left: 15px;
+            margin-left: -15px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
+        }
+
+        .diagram-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .diagram-box h3 {
+            margin-top: 0;
+        }
+
+        .simulation-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 6px 12px rgba(33,150,243,0.2);
+        }
+
+        .simulation-controls {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #1565C0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #input-numero {
+            padding: 0.6rem;
+            font-size: 1.1rem;
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+            width: 140px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #input-numero:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.3);
+        }
+
+        .paso-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #paso-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #2196F3);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .code-and-diagram {
+                flex-direction: column;
+            }
+            .diagram-box {
+                margin-top: 1.5rem;
+            }
+            #flowchart {
+                height: 900px;
+            }
+            .simulation-controls {
+                justify-content: center;
+            }
+        }
+
+        .flash {
+            animation: flash 1s infinite;
+        }
+        
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .flow-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        .highlight-element {
+            filter: url(#glow);
+        }
+
+        .case-visited {
+            fill: #FFF3E0 !important;
+            stroke: #FFB74D !important;
+            stroke-width: 2;
+        }
+
+        .case-executing {
+            fill: #4CAF50 !important;
+            stroke: #2E7D32 !important;
+            filter: url(#glow);
+        }
+
+        .final-highlight {
+            fill: #4CAF50 !important;
+            stroke: #2E7D32 !important;
+            filter: url(#glow);
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <h3>📌 ¿Qué es?</h3>
+        <p>La estructura <code>switch-case</code> permite seleccionar entre múltiples caminos de ejecución basados en el valor de una variable. Evalúa secuencialmente hasta encontrar una coincidencia.</p>
+        
+        <h3>🌍 Analogía del mundo real</h3>
+        <p>Es como un conmutador telefónico antiguo: revisa cada conexión en orden hasta encontrar la línea correcta.</p>
+
+        <h3>✅ Ventajas</h3>
+        <ul>
+            <li>Más legible que múltiples <code>if-else if</code>.</li>
+            <li>Evalúa en orden hasta encontrar coincidencia.</li>
+            <li>Ideal para valores discretos y conocidos.</li>
+        </ul>
+
+        <h3>❌ Desventajas</h3>
+        <ul>
+            <li>Solo funciona con tipos primitivos o <code>String</code>.</li>
+            <li>No maneja rangos ni condiciones complejas.</li>
+        </ul>
+    </section>
+    <h2>🔹 Estructura Condicional: switch-case</h2>
+
+    <section class="simulation-box">
+        <h3>▶️ Simulación Interactiva - Paso a Paso</h3>
+        <p>Modifica el valor de <code>dia</code> (1-7), luego usa los botones para avanzar o retroceder en la ejecución.</p>
+        
+        <div class="simulation-controls">
+            <input type="number" id="input-numero" value="3" min="1" max="7" placeholder="1-7">
+            <button id="btn-reiniciar" class="btn">🔄 Reiniciar</button>
+            <button id="btn-anterior" class="btn" disabled>⬅️ Anterior</button>
+            <button id="btn-siguiente" class="btn">Siguiente ➡️</button>
+        </div>
+
+        <div id="output-simulacion">
+            <p><strong>Salida:</strong> <span id="resultado">...</span></p>
+            <p><strong>Paso actual:</strong> <span id="paso">Esperando inicio...</span></p>
+            <div id="paso-indicator" class="paso-bar">
+                <div id="paso-progress"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="example-container">
+        <div class="code-and-diagram">
+            <!-- Código Java -->
+            <div class="code-box">
+                <h3>💻 Ejemplo: Determinar el día de la semana</h3>
+                <pre><code><span class="code-line" data-line="1">public class EjemploSwitchCase {</span>
+<span class="code-line" data-line="2">    public static void main(String[] args) {</span>
+<span class="code-line" data-line="3">        int dia = <span id="code-numero">3</span>;</span>
+<span class="code-line highlightable" data-line="4" id="line-switch">        switch (dia) {</span>
+<span class="code-line highlightable" data-line="5" id="line-case1">            case 1: System.out.println("Lunes"); break;</span>
+<span class="code-line highlightable" data-line="6" id="line-case2">            case 2: System.out.println("Martes"); break;</span>
+<span class="code-line highlightable" data-line="7" id="line-case3">            case 3: System.out.println("Miércoles"); break;</span>
+<span class="code-line highlightable" data-line="8" id="line-case4">            case 4: System.out.println("Jueves"); break;</span>
+<span class="code-line highlightable" data-line="9" id="line-case5">            case 5: System.out.println("Viernes"); break;</span>
+<span class="code-line highlightable" data-line="10" id="line-case6">            case 6: System.out.println("Sábado"); break;</span>
+<span class="code-line highlightable" data-line="11" id="line-case7">            case 7: System.out.println("Domingo"); break;</span>
+<span class="code-line highlightable" data-line="12" id="line-default">            default: System.out.println("Día inválido");</span>
+<span class="code-line" data-line="13">        }</span>
+<span class="code-line" data-line="14">    }</span>
+<span class="code-line" data-line="15">}</span></code></pre>
+            </div>
+
+            <!-- Diagrama de Flujo SVG Mejorado con Animación Completa -->
+            <div class="diagram-box">
+                <h3>📊 Diagrama de Flujo Interactivo</h3>
+                <svg id="flowchart" width="100%" height="900" viewBox="0 0 500 900" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Definiciones -->
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                            <feMerge> 
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L10,3 z" fill="#333"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- INICIO -->
+                    <circle id="start" cx="250" cy="40" r="20" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="3"/>
+                    <text x="250" y="45" text-anchor="middle" fill="white" font-size="11" font-weight="bold">INICIO</text>
+                    
+                    <!-- Flecha desde Inicio -->
+                    <line x1="250" y1="60" x2="250" y2="100" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow)"/>
+                    
+                    <!-- SWITCH (Rombo) -->
+                    <g id="switch-group">
+                        <path id="switch-cond" d="M250,100 L310,140 L250,180 L190,140 Z" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="3"/>
+                        <text x="250" y="135" text-anchor="middle" fill="white" font-size="11" font-weight="bold">SWITCH</text>
+                        <text x="250" y="150" text-anchor="middle" fill="white" font-size="10" font-weight="bold">dia</text>
+                    </g>
+
+                    <!-- Flecha hacia el primer caso -->
+                    <line id="line-to-case1" x1="250" y1="180" x2="250" y2="220" stroke="#4A6B8A" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Case 1 -->
+                    <rect id="bloque-case1" x="180" y="220" width="140" height="40" rx="6" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="2"/>
+                    <text x="250" y="245" text-anchor="middle" fill="white" font-size="11" font-weight="bold">case 1: Lunes</text>
+                    <line id="line-case1-case2" x1="250" y1="260" x2="250" y2="280" stroke="#4A6B8A" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Case 2 -->
+                    <rect id="bloque-case2" x="180" y="280" width="140" height="40" rx="6" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="2"/>
+                    <text x="250" y="305" text-anchor="middle" fill="white" font-size="11" font-weight="bold">case 2: Martes</text>
+                    <line id="line-case2-case3" x1="250" y1="320" x2="250" y2="340" stroke="#4A6B8A" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Case 3 -->
+                    <rect id="bloque-case3" x="180" y="340" width="140" height="40" rx="6" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="2"/>
+                    <text x="250" y="365" text-anchor="middle" fill="white" font-size="11" font-weight="bold">case 3: Miércoles</text>
+                    <line id="line-case3-case4" x1="250" y1="380" x2="250" y2="400" stroke="#4A6B8A" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Case 4 -->
+                    <rect id="bloque-case4" x="180" y="400" width="140" height="40" rx="6" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="2"/>
+                    <text x="250" y="425" text-anchor="middle" fill="white" font-size="11" font-weight="bold">case 4: Jueves</text>
+                    <line id="line-case4-case5" x1="250" y1="440" x2="250" y2="460" stroke="#4A6B8A" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Case 5 -->
+                    <rect id="bloque-case5" x="180" y="460" width="140" height="40" rx="6" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="2"/>
+                    <text x="250" y="485" text-anchor="middle" fill="white" font-size="11" font-weight="bold">case 5: Viernes</text>
+                    <line id="line-case5-case6" x1="250" y1="500" x2="250" y2="520" stroke="#4A6B8A" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Case 6 -->
+                    <rect id="bloque-case6" x="180" y="520" width="140" height="40" rx="6" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="2"/>
+                    <text x="250" y="545" text-anchor="middle" fill="white" font-size="11" font-weight="bold">case 6: Sábado</text>
+                    <line id="line-case6-case7" x1="250" y1="560" x2="250" y2="580" stroke="#4A6B8A" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Case 7 -->
+                    <rect id="bloque-case7" x="180" y="580" width="140" height="40" rx="6" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="2"/>
+                    <text x="250" y="605" text-anchor="middle" fill="white" font-size="11" font-weight="bold">case 7: Domingo</text>
+                    <line id="line-case7-default" x1="250" y1="620" x2="250" y2="640" stroke="#4A6B8A" stroke-width="2" marker-end="url(#arrow)"/>
+
+                    <!-- Default -->
+                    <rect id="bloque-default" x="180" y="640" width="140" height="40" rx="6" fill="#F44336" stroke="#D32F2F" stroke-width="2"/>
+                    <text x="250" y="665" text-anchor="middle" fill="white" font-size="11" font-weight="bold">default: Inválido</text>
+                    <line id="line-default-end" x1="250" y1="680" x2="250" y2="720" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <!-- FIN -->
+                    <circle id="end" cx="250" cy="740" r="20" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="3"/>
+                    <text x="250" y="745" text-anchor="middle" fill="white" font-size="11" font-weight="bold">FIN</text>
+
+                    <!-- Etiquetas de ejecución -->
+                    <text id="label-case1" x="340" y="245" fill="#4CAF50" font-size="10" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                    <text id="label-case2" x="340" y="305" fill="#4CAF50" font-size="10" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                    <text id="label-case3" x="340" y="365" fill="#4CAF50" font-size="10" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                    <text id="label-case4" x="340" y="425" fill="#4CAF50" font-size="10" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                    <text id="label-case5" x="340" y="485" fill="#4CAF50" font-size="10" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                    <text id="label-case6" x="340" y="545" fill="#4CAF50" font-size="10" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                    <text id="label-case7" x="340" y="605" fill="#4CAF50" font-size="10" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                    <text id="label-default" x="340" y="665" fill="#F44336" font-size="10" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class SwitchCaseSimulator {
+            constructor() {
+                this.currentStep = 0;
+                this.totalSteps = 3;
+                this.dia = 3;
+                this.resultado = null;
+                this.matchingCase = null;
+
+                this.initializeElements();
+                this.bindEvents();
+                this.updateUI();
+            }
+
+            initializeElements() {
+                // Controles
+                this.inputNumero = document.getElementById('input-numero');
+                this.btnReiniciar = document.getElementById('btn-reiniciar');
+                this.btnAnterior = document.getElementById('btn-anterior');
+                this.btnSiguiente = document.getElementById('btn-siguiente');
+
+                // Salida
+                this.resultadoEl = document.getElementById('resultado');
+                this.pasoEl = document.getElementById('paso');
+                this.pasoProgress = document.getElementById('paso-progress');
+
+                // Código
+                this.codeNumero = document.getElementById('code-numero');
+                this.lineSwitch = document.getElementById('line-switch');
+                this.lineCase1 = document.getElementById('line-case1');
+                this.lineCase2 = document.getElementById('line-case2');
+                this.lineCase3 = document.getElementById('line-case3');
+                this.lineCase4 = document.getElementById('line-case4');
+                this.lineCase5 = document.getElementById('line-case5');
+                this.lineCase6 = document.getElementById('line-case6');
+                this.lineCase7 = document.getElementById('line-case7');
+                this.lineDefault = document.getElementById('line-default');
+
+                // SVG - Bloques
+                this.switchCond = document.getElementById('switch-cond');
+                this.bloqueCase1 = document.getElementById('bloque-case1');
+                this.bloqueCase2 = document.getElementById('bloque-case2');
+                this.bloqueCase3 = document.getElementById('bloque-case3');
+                this.bloqueCase4 = document.getElementById('bloque-case4');
+                this.bloqueCase5 = document.getElementById('bloque-case5');
+                this.bloqueCase6 = document.getElementById('bloque-case6');
+                this.bloqueCase7 = document.getElementById('bloque-case7');
+                this.bloqueDefault = document.getElementById('bloque-default');
+                this.endCircle = document.getElementById('end'); // <-- Añadido: círculo FIN
+
+                // SVG - Líneas
+                this.lineToCase1 = document.getElementById('line-to-case1');
+                this.lineCase1Case2 = document.getElementById('line-case1-case2');
+                this.lineCase2Case3 = document.getElementById('line-case2-case3');
+                this.lineCase3Case4 = document.getElementById('line-case3-case4');
+                this.lineCase4Case5 = document.getElementById('line-case4-case5');
+                this.lineCase5Case6 = document.getElementById('line-case5-case6');
+                this.lineCase6Case7 = document.getElementById('line-case6-case7');
+                this.lineCase7Default = document.getElementById('line-case7-default');
+                this.lineDefaultEnd = document.getElementById('line-default-end');
+
+                // Etiquetas
+                this.labelCase1 = document.getElementById('label-case1');
+                this.labelCase2 = document.getElementById('label-case2');
+                this.labelCase3 = document.getElementById('label-case3');
+                this.labelCase4 = document.getElementById('label-case4');
+                this.labelCase5 = document.getElementById('label-case5');
+                this.labelCase6 = document.getElementById('label-case6');
+                this.labelCase7 = document.getElementById('label-case7');
+                this.labelDefault = document.getElementById('label-default');
+
+                // Guardar colores originales
+                this.originalColors = {
+                    switch: this.switchCond.getAttribute('fill'),
+                    switchStroke: this.switchCond.getAttribute('stroke'),
+                    case: this.bloqueCase1.getAttribute('fill'),
+                    caseStroke: this.bloqueCase1.getAttribute('stroke'),
+                    default: this.bloqueDefault.getAttribute('fill'),
+                    defaultStroke: this.bloqueDefault.getAttribute('stroke'),
+                    end: this.endCircle.getAttribute('fill'),       // <-- Guardar original de FIN
+                    endStroke: this.endCircle.getAttribute('stroke') // <-- y su borde
+                };
+            }
+
+            bindEvents() {
+                this.btnReiniciar.addEventListener('click', () => this.reiniciar());
+                this.btnAnterior.addEventListener('click', () => this.pasoAnterior());
+                this.btnSiguiente.addEventListener('click', () => this.siguientePaso());
+                this.inputNumero.addEventListener('input', () => this.reiniciar());
+            }
+
+            reiniciar() {
+                this.dia = parseInt(this.inputNumero.value) || 1;
+                this.matchingCase = (this.dia >= 1 && this.dia <= 7) ? this.dia : 'default'; // <-- Asignación explícita
+
+                this.codeNumero.textContent = this.dia;
+                this.resultado = null;
+                this.currentStep = 0;
+
+                this.resetAll();
+                this.updateUI();
+            }
+
+            resetAll() {
+                // Resetear código
+                document.querySelectorAll('.code-line.highlight').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+
+                // Resetear SVG
+                this.switchCond.setAttribute('fill', this.originalColors.switch);
+                this.switchCond.setAttribute('stroke', this.originalColors.switchStroke);
+                this.switchCond.setAttribute('filter', 'none');
+
+                const bloques = [
+                    this.bloqueCase1, this.bloqueCase2, this.bloqueCase3,
+                    this.bloqueCase4, this.bloqueCase5, this.bloqueCase6,
+                    this.bloqueCase7
+                ];
+                bloques.forEach(b => {
+                    b.setAttribute('fill', this.originalColors.case);
+                    b.setAttribute('stroke', this.originalColors.caseStroke);
+                    b.classList.remove('case-visited', 'case-executing');
+                });
+
+                this.bloqueDefault.setAttribute('fill', this.originalColors.default);
+                this.bloqueDefault.setAttribute('stroke', this.originalColors.defaultStroke);
+                this.bloqueDefault.classList.remove('case-executing');
+
+                // Resetear FIN
+                this.endCircle.setAttribute('fill', this.originalColors.end);
+                this.endCircle.setAttribute('stroke', this.originalColors.endStroke);
+                this.endCircle.classList.remove('final-highlight');
+
+                // Resetear líneas (opcional)
+                const lineas = [
+                    this.lineToCase1, this.lineCase1Case2, this.lineCase2Case3,
+                    this.lineCase3Case4, this.lineCase4Case5, this.lineCase5Case6,
+                    this.lineCase6Case7, this.lineCase7Default, this.lineDefaultEnd
+                ];
+                lineas.forEach(linea => {
+                    linea.setAttribute('stroke', '#4A6B8A');
+                    linea.setAttribute('stroke-width', '2');
+                });
+
+                // Resetear etiquetas
+                [
+                    this.labelCase1, this.labelCase2, this.labelCase3,
+                    this.labelCase4, this.labelCase5, this.labelCase6,
+                    this.labelCase7, this.labelDefault
+                ].forEach(label => {
+                    label.setAttribute('opacity', '0');
+                    label.classList.remove('flash');
+                });
+            }
+
+            async siguientePaso() {
+                if (this.currentStep < this.totalSteps) {
+                    this.currentStep++;
+                    await this.ejecutarPaso();
+                }
+            }
+
+            async pasoAnterior() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    await this.ejecutarPaso();
+                }
+            }
+
+            async ejecutarPaso() {
+                this.resetAll();
+
+                switch (this.currentStep) {
+                    case 0:
+                        this.pasoEl.textContent = "Estado inicial. Presiona 'Siguiente' para comenzar.";
+                        break;
+
+                    case 1:
+                        this.pasoEl.textContent = `Paso 1: Evaluando switch(dia) → valor = ${this.dia}`;
+                        this.switchCond.setAttribute('fill', '#FF9800');
+                        this.switchCond.setAttribute('stroke', '#F57C00');
+                        this.switchCond.setAttribute('filter', 'url(#glow)');
+                        this.lineSwitch.classList.add('highlight');
+                        break;
+
+                    case 2:
+                        // Asegurar que matchingCase tenga valor (doble protección)
+                        if (this.matchingCase === null || this.matchingCase === undefined) {
+                            this.matchingCase = (this.dia >= 1 && this.dia <= 7) ? this.dia : 'default';
+                        }
+
+                        let diaTexto = "";
+                        switch (this.matchingCase) {
+                            case 1: diaTexto = "Lunes"; break;
+                            case 2: diaTexto = "Martes"; break;
+                            case 3: diaTexto = "Miércoles"; break;
+                            case 4: diaTexto = "Jueves"; break;
+                            case 5: diaTexto = "Viernes"; break;
+                            case 6: diaTexto = "Sábado"; break;
+                            case 7: diaTexto = "Domingo"; break;
+                            default: diaTexto = "Día inválido";
+                        }
+                        this.resultado = diaTexto;
+
+                        // ANIMACIÓN COMPLETA: recorrer hasta el caso
+                        if (this.matchingCase === 'default') {
+                            this.pasoEl.textContent = "Paso 2: Recorriendo casos... ninguno coincide → Ejecutando default";
+
+                            const bloques = [
+                                this.bloqueCase1, this.bloqueCase2, this.bloqueCase3,
+                                this.bloqueCase4, this.bloqueCase5, this.bloqueCase6,
+                                this.bloqueCase7
+                            ];
+
+                            for (let i = 0; i < bloques.length; i++) {
+                                bloques[i].classList.add('case-visited');
+                                await this.sleep(300);
+                            }
+
+                            this.bloqueDefault.classList.add('case-executing');
+                            this.lineDefault.classList.add('highlight');
+                            this.labelDefault.setAttribute('opacity', '1');
+                            this.labelDefault.classList.add('flash');
+
+                        } else {
+                            this.pasoEl.textContent = `Paso 2: Recorriendo casos hasta case ${this.matchingCase}...`;
+
+                            const bloques = [
+                                { el: this.bloqueCase1, line: this.lineCase1Case2, label: this.labelCase1, code: this.lineCase1 },
+                                { el: this.bloqueCase2, line: this.lineCase2Case3, label: this.labelCase2, code: this.lineCase2 },
+                                { el: this.bloqueCase3, line: this.lineCase3Case4, label: this.labelCase3, code: this.lineCase3 },
+                                { el: this.bloqueCase4, line: this.lineCase4Case5, label: this.labelCase4, code: this.lineCase4 },
+                                { el: this.bloqueCase5, line: this.lineCase5Case6, label: this.labelCase5, code: this.lineCase5 },
+                                { el: this.bloqueCase6, line: this.lineCase6Case7, label: this.labelCase6, code: this.lineCase6 },
+                                { el: this.bloqueCase7, line: this.lineCase7Default, label: this.labelCase7, code: this.lineCase7 }
+                            ];
+
+                            for (let i = 0; i < this.matchingCase; i++) {
+                                if (i < bloques.length) {
+                                    const b = bloques[i];
+                                    if (i === this.matchingCase - 1) {
+                                        b.el.classList.add('case-executing');
+                                        b.code.classList.add('highlight');
+                                        b.label.setAttribute('opacity', '1');
+                                        b.label.classList.add('flash');
+                                    } else {
+                                        b.el.classList.add('case-visited');
+                                    }
+                                    await this.sleep(400);
+                                }
+                            }
+                        }
+                        break;
+
+                    case 3:
+                        this.pasoEl.textContent = "Paso 3: Ejecución completada. Resaltando FIN.";
+                        this.resultadoEl.textContent = this.resultado;
+
+                        // ✅ RESALTAR FIN
+                        this.endCircle.classList.add('final-highlight');
+                        this.endCircle.setAttribute('fill', '#4CAF50');
+                        this.endCircle.setAttribute('stroke', '#2E7D32');
+                        this.endCircle.setAttribute('filter', 'url(#glow)');
+
+                        break;
+                }
+
+                this.updateUI();
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            updateUI() {
+                // Actualizar botones
+                this.btnAnterior.disabled = this.currentStep === 0;
+                this.btnSiguiente.disabled = this.currentStep === this.totalSteps;
+
+                // Actualizar barra de progreso
+                const progress = (this.currentStep / this.totalSteps) * 100;
+                this.pasoProgress.style.width = `${progress}%`;
+            }
+        }
+
+        // Inicializar simulación al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            new SwitchCaseSimulator();
+        });
+    </script>
+</body>
+</html>

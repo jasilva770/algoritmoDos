@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paradigma Orientado a Objetos - Simulador Interactivo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h2, h3, h4 {
+            color: #2c3e50;
+        }
+        
+        h2 {
+            border-bottom: 2px solid #3F51B5;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        h3 {
+            margin-top: 25px;
+            background-color: #e8eaf6;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3F51B5;
+        }
+        
+        .concept-container {
+            margin: 2rem 0;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .simulation-box {
+            background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 6px 12px rgba(63, 81, 181, 0.2);
+        }
+
+        .simulation-controls {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn {
+            background: #3F51B5;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #303F9F;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .paso-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #paso-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #3F51B5);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .example-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .code-box {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            margin: 1rem 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-line {
+            display: block;
+            padding: 3px 0;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .code-line.highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-left: 5px solid #ffc107;
+            padding-left: 15px;
+            margin-left: -15px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
+        }
+
+        .object-diagram {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .class-card {
+            background: #bbdefb;
+            border: 2px solid #1976d2;
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 250px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .class-name {
+            background: #1976d2;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .attribute, .method {
+            background: white;
+            margin: 0.5rem 0;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #2196f3;
+        }
+
+        .method {
+            border-left-color: #4caf50;
+        }
+
+        .instance-card {
+            background: #e8f5e8;
+            border: 2px solid #388e3c;
+            border-radius: 12px;
+            padding: 1.5rem;
+            width: 250px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .instance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .instance-name {
+            background: #388e3c;
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .instance-value {
+            background: white;
+            margin: 0.5rem 0;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #66bb6a;
+        }
+
+        .pillars-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .pillar-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-top: 4px solid #3F51B5;
+            transition: all 0.3s ease;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        .pillar-card.abstraccion { border-top-color: #FF5722; }
+        .pillar-card.encapsulamiento { border-top-color: #009688; }
+        .pillar-card.herencia { border-top-color: #FFC107; }
+        .pillar-card.polimorfismo { border-top-color: #9C27B0; }
+
+        .pillar-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+
+        .analogy-box {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            border: 2px solid #ffb74d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 8px rgba(255, 167, 38, 0.2);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th, .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table th {
+            background-color: #3F51B5;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+
+        .comparison-table tr:hover {
+            background-color: #e8eaf6;
+        }
+
+        @media (max-width: 768px) {
+            .object-diagram {
+                flex-direction: column;
+                align-items: center;
+            }
+            .pillars-container {
+                grid-template-columns: 1fr;
+            }
+            .simulation-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        .highlight-text {
+            background-color: #fff9c4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .benefits-list {
+            columns: 2;
+            column-gap: 2rem;
+            margin: 1.5rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .benefits-list {
+                columns: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h2>🔹 Paradigma Orientado a Objetos (POO)</h2>
+
+    <section class="concept-container">
+        <h3>📌 ¿Qué es el Paradigma Orientado a Objetos?</h3>
+        <p>El <span class="highlight-text">Paradigma Orientado a Objetos (POO)</span> es un enfoque de programación que organiza el software como una colección de <span class="highlight-text">objetos</span> que contienen tanto <span class="highlight-text">datos</span> como <span class="highlight-text">comportamientos</span>.</p>
+        
+        <p>En lugar de pensar en acciones y lógica por separado, la POO nos permite modelar el mundo real creando "objetos" que representan entidades con características y capacidades específicas.</p>
+        
+        <div class="analogy-box">
+            <h4>🌍 Analogía del mundo real</h4>
+            <p>Imagina que estás diseñando un videojuego. En lugar de tener variables y funciones sueltas para manejar personajes, podrías crear una <span class="highlight-text">clase "Personaje"</span> que defina las propiedades (nombre, vida, fuerza) y comportamientos (moverse, atacar, defenderse) que todos los personajes comparten. Luego, cada personaje específico en el juego sería un <span class="highlight-text">objeto</span> (o instancia) de esa clase.</p>
+        </div>
+    </section>
+
+    <section class="concept-container">
+        <h3>🏛️ Los 4 Pilares de la POO</h3>
+        <p>El paradigma orientado a objetos se basa en cuatro principios fundamentales:</p>
+        
+        <div class="pillars-container">
+            <div class="pillar-card abstraccion">
+                <div class="pillar-title">1. Abstracción</div>
+                <p>Consiste en representar las características esenciales de un objeto sin incluir detalles innecesarios. Es como un resumen que captura lo más importante.</p>
+                <p><strong>Ejemplo:</strong> Un automóvil tiene propiedades como marca, modelo, color y comportamientos como arrancar, acelerar y frenar, sin necesidad de saber cómo funciona internamente el motor.</p>
+            </div>
+            
+            <div class="pillar-card encapsulamiento">
+                <div class="pillar-title">2. Encapsulamiento</div>
+                <p>Es el mecanismo que restringe el acceso directo a los componentes de un objeto, permitiendo que solo se puedan modificar a través de métodos definidos. Protege los datos del objeto.</p>
+                <p><strong>Ejemplo:</strong> En una clase "CuentaBancaria", el saldo podría ser privado y solo modificarse mediante métodos como "depositar()" o "retirar()".</p>
+            </div>
+            
+            <div class="pillar-card herencia">
+                <div class="pillar-title">3. Herencia</div>
+                <p>Permite crear nuevas clases basadas en clases existentes, heredando sus propiedades y métodos. Promueve la reutilización de código y la creación de jerarquías.</p>
+                <p><strong>Ejemplo:</strong> Una clase "Vehículo" puede tener subclases como "Auto", "Moto" y "Camión" que heredan propiedades como "ruedas" y "velocidad", pero pueden tener características propias.</p>
+            </div>
+            
+            <div class="pillar-card polimorfismo">
+                <div class="pillar-title">4. Polimorfismo</div>
+                <p>Permite que objetos de diferentes clases respondan al mismo mensaje (método) de manera diferente. La misma interfaz puede tener diferentes implementaciones.</p>
+                <p><strong>Ejemplo:</strong> Diferentes animales pueden tener un método "hacerSonido()", pero un perro dirá "Guau", un gato "Miau" y un pájaro "Pío".</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="simulation-box">
+        <h3>▶️ Introducción Interactiva</h3>
+        <p>Usa los botones para explorar los conceptos fundamentales del Paradigma Orientado a Objetos paso a paso.</p>
+        
+        <div class="simulation-controls">
+            <button id="btn-reiniciar" class="btn">🔄 Reiniciar</button>
+            <button id="btn-anterior" class="btn" disabled>⬅️ Anterior</button>
+            <button id="btn-siguiente" class="btn">Siguiente ➡️</button>
+        </div>
+
+        <div id="output-simulacion">
+            <p><strong>Tema actual:</strong> <span id="tema-actual">Introducción al Paradigma Orientado a Objetos</span></p>
+            <p><strong>Explicación:</strong> <span id="explicacion">Selecciona "Siguiente" para comenzar la exploración interactiva.</span></p>
+            <div id="paso-indicator" class="paso-bar">
+                <div id="paso-progress"></div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="concept-container">
+        <h3>💻 Ejemplo Práctico: Clase y Objetos</h3>
+        <p>A continuación, un ejemplo de cómo se define una clase y se crean objetos en Java:</p>
+        
+        <div class="code-box">
+            <code><span class="code-line" data-line="1">// Definición de la clase</span>
+<span class="code-line" data-line="2">public class Perro {</span>
+<span class="code-line" data-line="3">    // Atributos (propiedades)</span>
+<span class="code-line" data-line="4">    private String nombre;</span>
+<span class="code-line" data-line="5">    private String raza;</span>
+<span class="code-line" data-line="6">    private int edad;</span>
+<span class="code-line" data-line="7">    </span>
+<span class="code-line" data-line="8">    // Constructor</span>
+<span class="code-line" data-line="9">    public Perro(String nombre, String raza, int edad) {</span>
+<span class="code-line" data-line="10">        this.nombre = nombre;</span>
+<span class="code-line" data-line="11">        this.raza = raza;</span>
+<span class="code-line" data-line="12">        this.edad = edad;</span>
+<span class="code-line" data-line="13">    }</span>
+<span class="code-line" data-line="14">    </span>
+<span class="code-line" data-line="15">    // Métodos (comportamientos)</span>
+<span class="code-line" data-line="16">    public void ladrar() {</span>
+<span class="code-line" data-line="17">        System.out.println(nombre + " está ladrando: ¡Guau guau!");</span>
+<span class="code-line" data-line="18">    }</span>
+<span class="code-line" data-line="19">    </span>
+<span class="code-line" data-line="20">    public void mostrarInfo() {</span>
+<span class="code-line" data-line="21">        System.out.println("Nombre: " + nombre + ", Raza: " + raza + ", Edad: " + edad);</span>
+<span class="code-line" data-line="22">    }</span>
+<span class="code-line" data-line="23">}</span>
+<span class="code-line" data-line="24"></span>
+<span class="code-line" data-line="25">// Creación y uso de objetos</span>
+<span class="code-line" data-line="26">public class Main {</span>
+<span class="code-line" data-line="27">    public static void main(String[] args) {</span>
+<span class="code-line" data-line="28">        // Crear objetos (instancias)</span>
+<span class="code-line" data-line="29">        Perro firulais = new Perro("Firulais", "Labrador", 3);</span>
+<span class="code-line" data-line="30">        Perro scooby = new Perro("Scooby", "Gran Danés", 5);</span>
+<span class="code-line" data-line="31">        </span>
+<span class="code-line" data-line="32">        // Usar los objetos</span>
+<span class="code-line" data-line="33">        firulais.mostrarInfo(); // Nombre: Firulais, Raza: Labrador, Edad: 3</span>
+<span class="code-line" data-line="34">        firulais.ladrar();      // Firulais está ladrando: ¡Guau guau!</span>
+<span class="code-line" data-line="35">        </span>
+<span class="code-line" data-line="36">        scooby.mostrarInfo();   // Nombre: Scooby, Raza: Gran Danés, Edad: 5</span>
+<span class="code-line" data-line="37">        scooby.ladrar();        // Scooby está ladrando: ¡Guau guau!</span>
+<span class="code-line" data-line="38">    }</span>
+<span class="code-line" data-line="39">}</span></code>
+        </div>
+        
+        <div class="object-diagram">
+            <div class="class-card">
+                <div class="class-name">Clase: Perro</div>
+                <div class="attribute">Atributos:</div>
+                <div class="attribute">- nombre: String</div>
+                <div class="attribute">- raza: String</div>
+                <div class="attribute">- edad: int</div>
+                <div class="method">Métodos:</div>
+                <div class="method">+ ladrar(): void</div>
+                <div class="method">+ mostrarInfo(): void</div>
+                <div class="method">+ Constructor()</div>
+            </div>
+            
+            <div class="instance-card">
+                <div class="instance-name">Objeto: firulais</div>
+                <div class="instance-value">nombre: "Firulais"</div>
+                <div class="instance-value">raza: "Labrador"</div>
+                <div class="instance-value">edad: 3</div>
+                <div class="instance-value">Comportamiento: ladrar()</div>
+            </div>
+            
+            <div class="instance-card">
+                <div class="instance-name">Objeto: scooby</div>
+                <div class="instance-value">nombre: "Scooby"</div>
+                <div class="instance-value">raza: "Gran Danés"</div>
+                <div class="instance-value">edad: 5</div>
+                <div class="instance-value">Comportamiento: ladrar()</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="concept-container">
+        <h3>✅ Beneficios de la Programación Orientada a Objetos</h3>
+        <ul class="benefits-list">
+            <li><strong>Modularidad:</strong> El código se organiza en objetos independientes, facilitando su mantenimiento.</li>
+            <li><strong>Reutilización:</strong> Las clases pueden reutilizarse en diferentes programas mediante la herencia.</li>
+            <li><strong>Mantenibilidad:</strong> Los cambios en una clase no afectan necesariamente a otras partes del sistema.</li>
+            <li><strong>Escalabilidad:</strong> Es más fácil extender el sistema añadiendo nuevas clases o modificando las existentes.</li>
+            <li><strong>Modelado del mundo real:</strong> Permite representar entidades del mundo real de forma natural.</li>
+            <li><strong>Encapsulamiento:</strong> Protege los datos y controla cómo se accede y modifica la información.</li>
+            <li><strong>Abstracción:</strong> Permite enfocarse en lo esencial sin preocuparse por los detalles internos.</li>
+            <li><strong>Polimorfismo:</strong> Facilita la creación de interfaces flexibles y extensibles.</li>
+        </ul>
+    </section>
+
+    <section class="concept-container">
+        <h3>🆚 Comparación: POO vs Programación Estructurada</h3>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Característica</th>
+                    <th>Programación Orientada a Objetos</th>
+                    <th>Programación Estructurada</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Unidad básica</strong></td>
+                    <td>Objetos (datos + comportamiento)</td>
+                    <td>Funciones y estructuras de datos separadas</td>
+                </tr>
+                <tr>
+                    <td><strong>Enfoque</strong></td>
+                    <td>Modelado de entidades del mundo real</td>
+                    <td>Secuencia de acciones y algoritmos</td>
+                </tr>
+                <tr>
+                    <td><strong>Reutilización</strong></td>
+                    <td>Alta (herencia, polimorfismo)</td>
+                    <td>Limitada (funciones, librerías)</td>
+                </tr>
+                <tr>
+                    <td><strong>Mantenimiento</strong></td>
+                    <td>Más fácil (encapsulamiento, modularidad)</td>
+                    <td>Más difícil (código disperso)</td>
+                </tr>
+                <tr>
+                    <td><strong>Escalabilidad</strong></td>
+                    <td>Alta (extensión mediante nuevas clases)</td>
+                    <td>Limitada (modificación de funciones existentes)</td>
+                </tr>
+                <tr>
+                    <td><strong>Complejidad</strong></td>
+                    <td>Mayor curva de aprendizaje inicial</td>
+                    <td>Más fácil de aprender inicialmente</td>
+                </tr>
+                <tr>
+                    <td><strong>Ejemplos de lenguajes</strong></td>
+                    <td>Java, C++, Python, C#, JavaScript</td>
+                    <td>C, Pascal, Fortran, BASIC</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="concept-container">
+        <h3>🚀 ¿Cuándo usar POO?</h3>
+        <p>La Programación Orientada a Objetos es especialmente útil en:</p>
+        <ul>
+            <li><strong>Proyectos grandes y complejos</strong> donde la organización y el mantenimiento son cruciales.</li>
+            <li><strong>Aplicaciones con interfaces gráficas</strong> donde los componentes pueden modelarse como objetos.</li>
+            <li><strong>Sistemas que modelan entidades del mundo real</strong> como en simulaciones, juegos o sistemas empresariales.</li>
+            <li><strong>Desarrollo en equipo</strong> donde la modularidad facilita la división del trabajo.</li>
+            <li><strong>Proyectos que requieren escalabilidad</strong> y evolución a lo largo del tiempo.</li>
+        </ul>
+        
+        <p><strong>Consejo:</strong> No siempre es necesario usar POO. Para scripts pequeños o algoritmos simples, la programación estructurada puede ser más directa y eficiente.</p>
+    </section>
+
+    <script>
+        class POOSimulator {
+            constructor() {
+                this.currentStep = 0;
+                this.totalSteps = 5;
+                this.steps = [
+                    {
+                        title: "Introducción al Paradigma Orientado a Objetos",
+                        description: "La POO organiza el software como una colección de objetos que contienen datos y comportamientos. Esto permite modelar el mundo real de forma más natural."
+                    },
+                    {
+                        title: "Primer Pilar: Abstracción",
+                        description: "La abstracción consiste en representar las características esenciales de un objeto sin incluir detalles innecesarios. Nos permite enfocarnos en lo importante."
+                    },
+                    {
+                        title: "Segundo Pilar: Encapsulamiento",
+                        description: "El encapsulamiento restringe el acceso directo a los componentes de un objeto, protegiendo sus datos y permitiendo que solo se modifiquen a través de métodos definidos."
+                    },
+                    {
+                        title: "Tercer Pilar: Herencia",
+                        description: "La herencia permite crear nuevas clases basadas en clases existentes, heredando sus propiedades y métodos. Esto promueve la reutilización de código y la creación de jerarquías."
+                    },
+                    {
+                        title: "Cuarto Pilar: Polimorfismo",
+                        description: "El polimorfismo permite que objetos de diferentes clases respondan al mismo mensaje (método) de manera diferente. La misma interfaz puede tener diferentes implementaciones."
+                    }
+                ];
+
+                this.initializeElements();
+                this.bindEvents();
+                this.updateUI();
+            }
+
+            initializeElements() {
+                // Controles
+                this.btnReiniciar = document.getElementById('btn-reiniciar');
+                this.btnAnterior = document.getElementById('btn-anterior');
+                this.btnSiguiente = document.getElementById('btn-siguiente');
+
+                // Salida
+                this.temaActualEl = document.getElementById('tema-actual');
+                this.explicacionEl = document.getElementById('explicacion');
+                this.pasoProgress = document.getElementById('paso-progress');
+            }
+
+            bindEvents() {
+                this.btnReiniciar.addEventListener('click', () => this.reiniciar());
+                this.btnAnterior.addEventListener('click', () => this.pasoAnterior());
+                this.btnSiguiente.addEventListener('click', () => this.siguientePaso());
+            }
+
+            reiniciar() {
+                this.currentStep = 0;
+                this.updateUI();
+            }
+
+            siguientePaso() {
+                if (this.currentStep < this.totalSteps) {
+                    this.currentStep++;
+                    this.updateUI();
+                }
+            }
+
+            pasoAnterior() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    this.updateUI();
+                }
+            }
+
+            updateUI() {
+                // Actualizar botones
+                this.btnAnterior.disabled = this.currentStep === 0;
+                this.btnSiguiente.disabled = this.currentStep === this.totalSteps;
+
+                // Si estamos en un paso con contenido
+                if (this.currentStep > 0 && this.currentStep <= this.steps.length) {
+                    const currentStep = this.steps[this.currentStep - 1];
+                    this.temaActualEl.textContent = currentStep.title;
+                    this.explicacionEl.textContent = currentStep.description;
+                } else if (this.currentStep === 0) {
+                    this.temaActualEl.textContent = "Introducción al Paradigma Orientado a Objetos";
+                    this.explicacionEl.textContent = "Selecciona 'Siguiente' para comenzar la exploración interactiva.";
+                } else {
+                    this.temaActualEl.textContent = "¡Has completado la exploración!";
+                    this.explicacionEl.textContent = "Ahora tienes una comprensión básica de los conceptos fundamentales de la Programación Orientada a Objetos.";
+                }
+
+                // Actualizar barra de progreso (corregido)
+                const progress = (this.currentStep / this.totalSteps) * 100;
+                this.pasoProgress.style.width = `${progress}%`;
+            }
+        }
+
+        // Inicializar simulación al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            new POOSimulator();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprendiendo Notación Big O</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --tertiary-color: #e74c3c;
+            --quaternary-color: #f39c12;
+            --quinary-color: #9b59b6;
+            --senary-color: #1abc9c;
+            --septenary-color: #34495e;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: #fff;
+            --border-color: #ddd;
+            --light-bg: #f5f7fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 3rem 0 2rem;
+            text-align: center;
+            border-radius: 0 0 15px 15px;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, white, transparent);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 0.75rem;
+            margin-top: 3rem;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 3rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 3rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 500px;
+            margin-top: 1.5rem;
+        }
+
+        .complexity-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 2.5rem 0;
+        }
+
+        .complexity-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .complexity-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #bbb;
+        }
+
+        .complexity-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            font-size: 1.3rem;
+        }
+
+        .complexity-card p {
+            margin-bottom: 1.2rem;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .complexity-card .formula {
+            font-size: 1.1rem;
+            margin: 0.8rem 0;
+            padding: 0.6rem 1rem;
+        }
+
+        .code {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--light-bg);
+            padding: 1.2rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0 1.5rem;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .toggle-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            max-width: 100%;
+            flex: 1 1 100%;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.85rem 1.4rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
+        }
+
+        button.active {
+            background-color: var(--secondary-color);
+        }
+
+        button.reset {
+            background-color: var(--tertiary-color);
+            min-width: 160px;
+        }
+
+        button.reset:hover {
+            background-color: #c0392b;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            justify-content: center;
+            flex-wrap: wrap;
+            background-color: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            width: 100%;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .slider-container label {
+            font-weight: 700;
+            min-width: 220px;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        input[type="range"] {
+            width: 350px;
+            height: 12px;
+            border-radius: 6px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .value-display {
+            font-weight: 700;
+            min-width: 70px;
+            text-align: center;
+            background-color: var(--card-bg);
+            padding: 0.8rem 1.2rem;
+            border-radius: 8px;
+            border: 2px solid var(--primary-color);
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .examples {
+            margin: 3rem 0;
+        }
+
+        .example {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .example:hover {
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .example h4 {
+            margin-top: 0;
+            color: var(--tertiary-color);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            color: #666;
+            border-top: 2px solid var(--border-color);
+            margin-top: 3rem;
+            background-color: var(--light-bg);
+        }
+
+        .tip {
+            background-color: #e8f4fd;
+            border-left: 5px solid var(--primary-color);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .tip strong {
+            color: var(--primary-color);
+        }
+
+        .pedagogical-tips {
+            background-color: var(--light-bg);
+            padding: 2.5rem;
+            border-radius: 15px;
+            margin: 3rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.7rem;
+                margin-top: 2.5rem;
+            }
+            
+            .slider-container {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1.2rem;
+            }
+            
+            .slider-container label {
+                text-align: center;
+                min-width: auto;
+            }
+            
+            input[type="range"] {
+                width: 100%;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .toggle-controls {
+                justify-content: space-between;
+            }
+            
+            button {
+                min-width: auto;
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+            
+            .complexity-cards {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .intro, .chart-container, .pedagogical-tips {
+                padding: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 2rem 0 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+                padding: 0 15px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+
+        /* Chart specific styles */
+        #complexityChart {
+            max-height: 500px;
+        }
+
+        /* Loading state */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Entendiendo la Notación Big O</h1>
+            <p>Una guía interactiva para comprender la complejidad algorítmica y cómo afecta el rendimiento de tus programas</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="intro fade-in">
+            <h2>¿Qué es la Notación Big O?</h2>
+            <p>La Notación Big O es una forma de describir el rendimiento o complejidad de un algoritmo. Específicamente, mide cómo crece el tiempo de ejecución o el uso de memoria de un algoritmo a medida que el tamaño de la entrada (n) aumenta.</p>
+            <p>En lugar de dar un tiempo exacto, Big O describe el <strong>peor caso</strong> y se enfoca en la tasa de crecimiento cuando el tamaño de la entrada se vuelve muy grande.</p>
+            
+            <div class="tip">
+                <strong>💡 Consejo pedagógico:</strong> Piensa en Big O como una forma de comparar autos por su velocidad máxima, no por cuánto tardan en llegar a un destino específico. Lo que importa es cómo se comportan cuando la carga de trabajo crece.
+            </div>
+        </section>
+
+        <section class="chart-container fade-in delay-1">
+            <h2>Visualización Interactiva de Complejidades</h2>
+            <p>Usa los controles para ver cómo diferentes complejidades se comportan a medida que aumenta el tamaño de la entrada (n). Observa cómo algunas funciones crecen mucho más rápido que otras.</p>
+            
+            <div class="slider-container">
+                <label for="inputSize">Tamaño máximo de entrada (n):</label>
+                <input type="range" id="inputSize" min="5" max="50" value="20" step="1">
+                <div id="inputSizeValue" class="value-display">20</div>
+            </div>
+
+            <div class="controls">
+                <div class="toggle-controls">
+                    <button data-complexity="O(1)" class="active">O(1) - Constante</button>
+                    <button data-complexity="O(log n)" class="active">O(log n) - Logarítmica</button>
+                    <button data-complexity="O(n)" class="active">O(n) - Lineal</button>
+                    <button data-complexity="O(n log n)" class="active">O(n log n) - Linealít.</button>
+                    <button data-complexity="O(n²)" class="active">O(n²) - Cuadrática</button>
+                    <button data-complexity="O(2^n)" class="active">O(2^n) - Exponencial</button>
+                    <button data-complexity="O(n!)" class="active">O(n!) - Factorial</button>
+                </div>
+                <button class="reset">Reiniciar Todo</button>
+            </div>
+
+            <div class="chart-wrapper">
+                <canvas id="complexityChart"></canvas>
+            </div>
+        </section>
+
+        <section class="complexity-cards fade-in delay-2">
+            <h2>Tipos Comunes de Complejidad</h2>
+            
+            <div class="complexity-card">
+                <h3>O(1) - Tiempo Constante</h3>
+                <p><strong>Definición:</strong> El algoritmo toma el mismo tiempo sin importar el tamaño de la entrada.</p>
+                <p><strong>Fórmula:</strong> <span class="formula">f(n) = c</span></p>
+                <div class="code">
+                    // Acceder a un elemento en un array<br>
+                    function getElement(arr, index) {<br>
+                    &nbsp;&nbsp;return arr[index];<br>
+                    }
+                </div>
+                <p><strong>Ejemplo:</strong> Acceder a un elemento en un array por índice, insertar al inicio de una lista enlazada.</p>
+            </div>
+
+            <div class="complexity-card">
+                <h3>O(log n) - Tiempo Logarítmico</h3>
+                <p><strong>Definición:</strong> El tiempo de ejecución crece logarítmicamente con el tamaño de la entrada. Muy eficiente.</p>
+                <p><strong>Fórmula:</strong> <span class="formula">f(n) = log n</span></p>
+                <div class="code">
+                    // Búsqueda binaria<br>
+                    function binarySearch(arr, target) {<br>
+                    &nbsp;&nbsp;let left = 0, right = arr.length - 1;<br>
+                    &nbsp;&nbsp;while (left <= right) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;const mid = Math.floor((left + right) / 2);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if (arr[mid] === target) return mid;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if (arr[mid] < target) left = mid + 1;<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;else right = mid - 1;<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;return -1;<br>
+                    }
+                </div>
+                <p><strong>Ejemplo:</strong> Búsqueda binaria en un array ordenado, recorrido de árbol binario balanceado.</p>
+            </div>
+
+            <div class="complexity-card">
+                <h3>O(n) - Tiempo Lineal</h3>
+                <p><strong>Definición:</strong> El tiempo de ejecución crece directamente proporcional al tamaño de la entrada.</p>
+                <p><strong>Fórmula:</strong> <span class="formula">f(n) = n</span></p>
+                <div class="code">
+                    // Encontrar el máximo en un array<br>
+                    function findMax(arr) {<br>
+                    &nbsp;&nbsp;let max = arr[0];<br>
+                    &nbsp;&nbsp;for (let i = 1; i < arr.length; i++) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;if (arr[i] > max) max = arr[i];<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;return max;<br>
+                    }
+                </div>
+                <p><strong>Ejemplo:</strong> Buscar un elemento en un array no ordenado, recorrer una lista enlazada.</p>
+            </div>
+
+            <div class="complexity-card">
+                <h3>O(n log n) - Tiempo Lineal Logarítmico</h3>
+                <p><strong>Definición:</strong> El tiempo de ejecución crece proporcionalmente a n multiplicado por el logaritmo de n.</p>
+                <p><strong>Fórmula:</strong> <span class="formula">f(n) = n × log n</span></p>
+                <div class="code">
+                    // Merge Sort<br>
+                    function mergeSort(arr) {<br>
+                    &nbsp;&nbsp;if (arr.length <= 1) return arr;<br>
+                    &nbsp;&nbsp;const mid = Math.floor(arr.length / 2);<br>
+                    &nbsp;&nbsp;const left = mergeSort(arr.slice(0, mid));<br>
+                    &nbsp;&nbsp;const right = mergeSort(arr.slice(mid));<br>
+                    &nbsp;&nbsp;return merge(left, right);<br>
+                    }
+                </div>
+                <p><strong>Ejemplo:</strong> Algoritmos eficientes de ordenamiento como Merge Sort, Quick Sort, Heap Sort.</p>
+            </div>
+
+            <div class="complexity-card">
+                <h3>O(n²) - Tiempo Cuadrático</h3>
+                <p><strong>Definición:</strong> El tiempo de ejecución crece proporcionalmente al cuadrado del tamaño de la entrada.</p>
+                <p><strong>Fórmula:</strong> <span class="formula">f(n) = n²</span></p>
+                <div class="code">
+                    // Bubble Sort<br>
+                    function bubbleSort(arr) {<br>
+                    &nbsp;&nbsp;for (let i = 0; i < arr.length; i++) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for (let j = 0; j < arr.length - 1; j++) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (arr[j] > arr[j + 1]) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;return arr;<br>
+                    }
+                </div>
+                <p><strong>Ejemplo:</strong> Algoritmos de ordenamiento simples como Bubble Sort, Selection Sort, o recorrer una matriz 2D.</p>
+            </div>
+
+            <div class="complexity-card">
+                <h3>O(2^n) - Tiempo Exponencial</h3>
+                <p><strong>Definición:</strong> El tiempo de ejecución se duplica con cada adición al tamaño de la entrada.</p>
+                <p><strong>Fórmula:</strong> <span class="formula">f(n) = 2^n</span></p>
+                <div class="code">
+                    // Cálculo recursivo de Fibonacci<br>
+                    function fibonacci(n) {<br>
+                    &nbsp;&nbsp;if (n <= 1) return n;<br>
+                    &nbsp;&nbsp;return fibonacci(n - 1) + fibonacci(n - 2);<br>
+                    }
+                </div>
+                <p><strong>Ejemplo:</strong> Cálculo recursivo de números de Fibonacci sin memoización, resolver problemas por fuerza bruta.</p>
+            </div>
+
+            <div class="complexity-card">
+                <h3>O(n!) - Tiempo Factorial</h3>
+                <p><strong>Definición:</strong> El tiempo de ejecución crece proporcionalmente al factorial del tamaño de la entrada.</p>
+                <p><strong>Fórmula:</strong> <span class="formula">f(n) = n!</span></p>
+                <div class="code">
+                    // Generar todas las permutaciones<br>
+                    function generatePermutations(arr) {<br>
+                    &nbsp;&nbsp;if (arr.length <= 1) return [arr];<br>
+                    &nbsp;&nbsp;const result = [];<br>
+                    &nbsp;&nbsp;for (let i = 0; i < arr.length; i++) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;const current = arr[i];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;const remaining = [...arr.slice(0, i), ...arr.slice(i + 1)];<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;const perms = generatePermutations(remaining);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for (let perm of perms) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result.push([current, ...perm]);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;return result;<br>
+                    }
+                </div>
+                <p><strong>Ejemplo:</strong> Generar todas las permutaciones de un conjunto, resolver el problema del viajante de comercio por fuerza bruta.</p>
+            </div>
+        </section>
+
+        <section class="examples fade-in delay-3">
+            <h2>Ejemplos Prácticos</h2>
+            
+            <div class="example">
+                <h4>Comparación de Algoritmos de Ordenamiento</h4>
+                <p>Imagina que necesitas ordenar una lista de números. Aquí hay cómo diferentes algoritmos se comparan:</p>
+                <ul>
+                    <li><strong>Bubble Sort:</strong> O(n²) - Lento para grandes conjuntos de datos. Para 10,000 elementos: ~100 millones de operaciones.</li>
+                    <li><strong>Merge Sort:</strong> O(n log n) - Rápido incluso para grandes conjuntos de datos. Para 10,000 elementos: ~130,000 operaciones.</li>
+                    <li><strong>TimSort (Python):</strong> O(n log n) - Optimizado para datos del mundo real.</li>
+                </ul>
+                <p>¡La diferencia es enorme! Merge Sort es casi 1000 veces más rápido que Bubble Sort para 10,000 elementos.</p>
+            </div>
+            
+            <div class="example">
+                <h4>Búsqueda en una Base de Datos</h4>
+                <p>Imagina buscar un registro en una base de datos con 1 millón de registros:</p>
+                <ul>
+                    <li><strong>Búsqueda lineal:</strong> O(n) - Podría requerir hasta 1 millón de comparaciones.</li>
+                    <li><strong>Búsqueda binaria (en datos ordenados):</strong> O(log n) - Solo requiere ~20 comparaciones (log₂(1,000,000) ≈ 20).</li>
+                    <li><strong>Tabla hash:</strong> O(1) - Generalmente solo 1 operación.</li>
+                </ul>
+                <p>¡Esa es la diferencia entre esperar segundos versus horas! La elección del algoritmo correcto puede hacer que tu aplicación sea usable o completamente ineficiente.</p>
+            </div>
+        </section>
+
+        <section class="pedagogical-tips fade-in">
+            <h2>Consejos Pedagógicos para Enseñar Big O</h2>
+            <div class="tip">
+                <p><strong>1. Empieza con lo concreto:</strong> Usa ejemplos del mundo real antes de introducir la notación matemática. Por ejemplo, compara buscar un nombre en una lista telefónica ordenada (logarítmico) versus desordenada (lineal).</p>
+                
+                <p><strong>2. Visualiza las diferencias:</strong> Las gráficas son esenciales para entender cómo las diferentes complejidades escalan. Haz que los estudiantes predigan cómo se verá la gráfica antes de mostrarla.</p>
+                
+                <p><strong>3. Haz comparaciones prácticas:</strong> Pide a los estudiantes que comparen algoritmos con diferentes complejidades resolviendo el mismo problema. Mide el tiempo real de ejecución con diferentes tamaños de entrada.</p>
+                
+                <p><strong>4. Contextualiza la importancia:</strong> Explica por qué importa - una app lenta pierde usuarios, un sistema ineficiente cuesta más en infraestructura. Un algoritmo O(n²) puede ser aceptable para 100 elementos, pero desastroso para 1 millón.</p>
+                
+                <p><strong>5. Simplifica el concepto:</strong> Recuerda que Big O es una aproximación - nos importa la tendencia general, no los detalles exactos. Ignoramos constantes y términos de menor orden porque lo que importa es cómo se comporta con entradas grandes.</p>
+                
+                <p><strong>6. Usa analogías:</strong> Compara las complejidades con modos de transporte: O(1) como teletransportación, O(log n) como avión, O(n) como auto, O(n²) como bicicleta, O(2^n) como caminar.</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar el gráfico
+            const ctx = document.getElementById('complexityChart').getContext('2d');
+            let chart;
+            
+            // Función para inicializar o actualizar el gráfico
+            function initChart() {
+                if (chart) {
+                    chart.destroy();
+                }
+                
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [
+                            {
+                                label: 'O(1) - Constante',
+                                data: [],
+                                borderColor: '#3498db',
+                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                borderWidth: 4,
+                                pointRadius: 3,
+                                pointHoverRadius: 6,
+                                fill: false,
+                                tension: 0.2
+                            },
+                            {
+                                label: 'O(log n) - Logarítmica',
+                                data: [],
+                                borderColor: '#2ecc71',
+                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                                borderWidth: 4,
+                                pointRadius: 3,
+                                pointHoverRadius: 6,
+                                fill: false,
+                                tension: 0.2
+                            },
+                            {
+                                label: 'O(n) - Lineal',
+                                data: [],
+                                borderColor: '#e74c3c',
+                                backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                borderWidth: 4,
+                                pointRadius: 3,
+                                pointHoverRadius: 6,
+                                fill: false,
+                                tension: 0.2
+                            },
+                            {
+                                label: 'O(n log n) - Lineal Logarítmica',
+                                data: [],
+                                borderColor: '#f39c12',
+                                backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                                borderWidth: 4,
+                                pointRadius: 3,
+                                pointHoverRadius: 6,
+                                fill: false,
+                                tension: 0.2
+                            },
+                            {
+                                label: 'O(n²) - Cuadrática',
+                                data: [],
+                                borderColor: '#9b59b6',
+                                backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                                borderWidth: 4,
+                                pointRadius: 3,
+                                pointHoverRadius: 6,
+                                fill: false,
+                                tension: 0.2
+                            },
+                            {
+                                label: 'O(2^n) - Exponencial',
+                                data: [],
+                                borderColor: '#1abc9c',
+                                backgroundColor: 'rgba(26, 188, 156, 0.1)',
+                                borderWidth: 4,
+                                pointRadius: 3,
+                                pointHoverRadius: 6,
+                                fill: false,
+                                tension: 0.2
+                            },
+                            {
+                                label: 'O(n!) - Factorial',
+                                data: [],
+                                borderColor: '#34495e',
+                                backgroundColor: 'rgba(52, 73, 94, 0.1)',
+                                borderWidth: 4,
+                                pointRadius: 3,
+                                pointHoverRadius: 6,
+                                fill: false,
+                                tension: 0.2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Tamaño de la entrada (n)',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Operaciones relativas',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                },
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    // Formatear números grandes en el eje Y
+                                    callback: function(value) {
+                                        if (value >= 1000000) {
+                                            return (value / 1000000).toFixed(1) + 'M';
+                                        } else if (value >= 1000) {
+                                            return (value / 1000).toFixed(1) + 'K';
+                                        }
+                                        return value;
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Comparación de Complejidades Big O',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
+                                },
+                                padding: {
+                                    top: 10,
+                                    bottom: 20
+                                }
+                            },
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    pointStyle: 'circle'
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed.y !== null) {
+                                            // Formatear números grandes
+                                            if (context.parsed.y >= 1000000) {
+                                                label += (context.parsed.y / 1000000).toFixed(2) + 'M';
+                                            } else if (context.parsed.y >= 1000) {
+                                                label += (context.parsed.y / 1000).toFixed(2) + 'K';
+                                            } else {
+                                                label += context.parsed.y.toFixed(2);
+                                            }
+                                        }
+                                        return label;
+                                    }
+                                },
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: '#fff',
+                                borderWidth: 1
+                            }
+                        },
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        }
+                    }
+                });
+                
+                // Actualizar el gráfico inicial
+                updateChart();
+            }
+
+            // Variables de estado
+            let maxSize = 20;
+            let activeComplexities = {
+                'O(1)': true,
+                'O(log n)': true,
+                'O(n)': true,
+                'O(n log n)': true,
+                'O(n²)': true,
+                'O(2^n)': true,
+                'O(n!)': true
+            };
+
+            // Función para calcular valores - ¡CORREGIDA!
+            function calculateValues(size) {
+                const nValues = Array.from({length: size}, (_, i) => i + 1);
+                
+                const complexities = {
+                    'O(1)': nValues.map(() => 1),
+                    'O(log n)': nValues.map(n => {
+                        // Asegurarse de que n > 0 y usar logaritmo base 2
+                        return n > 0 ? Math.log2(n) : 0;
+                    }),
+                    'O(n)': nValues.map(n => n),
+                    'O(n log n)': nValues.map(n => {
+                        // Asegurarse de que n > 0
+                        return n > 0 ? n * Math.log2(n) : 0;
+                    }),
+                    'O(n²)': nValues.map(n => n * n),
+                    'O(2^n)': nValues.map(n => {
+                        // Limitar para evitar valores demasiado grandes
+                        if (n > 30) return 1e9; // 1 billón
+                        return Math.pow(2, n);
+                    }),
+                    'O(n!)': nValues.map(n => {
+                        // Calcular factorial (limitado para evitar números muy grandes)
+                        if (n > 10) return 1e9; // Valor aproximado para evitar overflow
+                        if (n <= 1) return 1;
+                        let result = 1;
+                        for (let i = 2; i <= n; i++) {
+                            result *= i;
+                        }
+                        return result;
+                    })
+                };
+                
+                return { nValues, complexities };
+            }
+
+            // Función para actualizar el gráfico - ¡MEJORADA!
+            function updateChart() {
+                const { nValues, complexities } = calculateValues(maxSize);
+                
+                // Actualizar etiquetas
+                chart.data.labels = nValues;
+                
+                // Actualizar datasets
+                chart.data.datasets.forEach(dataset => {
+                    const complexityType = dataset.label.split(' ')[0];
+                    if (activeComplexities[complexityType]) {
+                        dataset.data = complexities[complexityType];
+                        dataset.hidden = false;
+                    } else {
+                        dataset.hidden = true;
+                    }
+                });
+                
+                // Actualizar el gráfico con animación
+                chart.update('active');
+            }
+
+            // Event listeners
+            document.getElementById('inputSize').addEventListener('input', function() {
+                maxSize = parseInt(this.value);
+                document.getElementById('inputSizeValue').textContent = maxSize;
+                updateChart();
+            });
+
+            document.querySelectorAll('button[data-complexity]').forEach(button => {
+                button.addEventListener('click', function() {
+                    const complexity = this.getAttribute('data-complexity');
+                    activeComplexities[complexity] = !activeComplexities[complexity];
+                    this.classList.toggle('active');
+                    updateChart();
+                });
+            });
+
+            document.querySelector('button.reset').addEventListener('click', function() {
+                // Reiniciar todos los botones de complejidad
+                document.querySelectorAll('button[data-complexity]').forEach(button => {
+                    button.classList.add('active');
+                    const complexity = button.getAttribute('data-complexity');
+                    activeComplexities[complexity] = true;
+                });
+                updateChart();
+            });
+
+            // Inicializar el gráfico después de un pequeño retraso para permitir la carga completa
+            setTimeout(initChart, 100);
+
+            // Aplicar animaciones de fade-in cuando los elementos estén en viewport
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>

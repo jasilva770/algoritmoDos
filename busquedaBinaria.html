@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algoritmo de Búsqueda Binaria - Simulador Interactivo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h2, h3 {
+            color: #2c3e50;
+        }
+        
+        h2 {
+            border-bottom: 2px solid #009688;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .example-container {
+            margin: 2rem 0;
+        }
+
+        .code-and-array {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .code-box, .array-box {
+            flex: 1;
+            min-width: 340px;
+            box-sizing: border-box;
+        }
+
+        .code-box pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-line {
+            display: block;
+            padding: 3px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .code-line.highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-left: 5px solid #ffc107;
+            padding-left: 15px;
+            margin-left: -15px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
+        }
+
+        .array-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .array-box h3 {
+            margin-top: 0;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .array-element {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #607d8b; /* Gris azulado base */
+            color: white;
+            margin: 3px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .array-index {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            position: absolute;
+            top: -20px;
+            background: #455a64;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        /* INICIO - Color VERDE BRILLANTE */
+        .array-element.start {
+            background: #4CAF50 !important; /* Verde brillante */
+            border: 3px solid #2E7D32; /* Verde oscuro para el borde */
+            box-shadow: 0 0 15px rgba(76, 175, 80, 0.6);
+            transform: scale(1.1);
+            z-index: 3;
+        }
+
+        /* FIN - Color ROJO BRILLANTE */
+        .array-element.end {
+            background: #F44336 !important; /* Rojo brillante */
+            border: 3px solid #C62828; /* Rojo oscuro para el borde */
+            box-shadow: 0 0 15px rgba(244, 67, 54, 0.6);
+            transform: scale(1.1);
+            z-index: 2;
+        }
+
+        /* MEDIO - Color AZUL BRILLANTE */
+        .array-element.middle {
+            background: #2196F3 !important; /* Azul brillante */
+            border: 3px solid #0D47A1; /* Azul oscuro para el borde */
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.7);
+            transform: scale(1.2);
+            z-index: 4;
+        }
+
+        /* Elemento ENCONTRADO */
+        .array-element.found {
+            background: #FF9800 !important; /* Naranja brillante */
+            border: 3px solid #E65100; /* Naranja oscuro */
+            animation: pulse 0.8s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(255, 152, 0, 0.8);
+            transform: scale(1.25);
+            z-index: 5;
+        }
+
+        /* Elemento NO ENCONTRADO */
+        .array-element.not-found {
+            background: #9E9E9E !important; /* Gris */
+            border: 2px solid #616161;
+            opacity: 0.7;
+        }
+
+        /* Si un elemento tiene múltiples estados, priorizar MEDIO > FOUND > START > END */
+        .array-element.middle.start, 
+        .array-element.middle.end,
+        .array-element.middle.start.end {
+            background: #2196F3 !important;
+            border: 3px solid #0D47A1;
+        }
+
+        .array-element.found.start,
+        .array-element.found.end,
+        .array-element.found.start.end {
+            background: #FF9800 !important;
+            border: 3px solid #E65100;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1.2); box-shadow: 0 0 15px rgba(255, 152, 0, 0.7); }
+            50% { transform: scale(1.3); box-shadow: 0 0 25px rgba(255, 152, 0, 1); }
+            100% { transform: scale(1.2); box-shadow: 0 0 15px rgba(255, 152, 0, 0.7); }
+        }
+
+        .simulation-box {
+            background: linear-gradient(135deg, #e0f2f1, #b2dfdb);
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 6px 12px rgba(0, 150, 136, 0.2);
+        }
+
+        .simulation-controls {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #009688;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #00796B;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #input-buscar {
+            padding: 0.6rem;
+            font-size: 1.1rem;
+            border: 2px solid #80cbc4;
+            border-radius: 8px;
+            width: 140px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #input-buscar:focus {
+            outline: none;
+            border-color: #009688;
+            box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.3);
+        }
+
+        .paso-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #paso-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #009688);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .result-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #009688;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .result-found {
+            border-left-color: #FF9800;
+        }
+
+        .result-not-found {
+            border-left-color: #F44336;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+
+        .legend-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 6px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .code-and-array {
+                flex-direction: column;
+            }
+            .array-box {
+                margin-top: 1.5rem;
+            }
+            .simulation-controls {
+                justify-content: center;
+            }
+            .array-element {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                margin: 2px;
+            }
+            .array-container {
+                justify-content: flex-start;
+            }
+            .legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <h3>📌 ¿Qué es?</h3>
+        <p>La <strong>búsqueda binaria</strong> es un algoritmo eficiente que encuentra un elemento en un array <strong>ordenado</strong> dividiendo repetidamente el espacio de búsqueda a la mitad.</p>
+        
+        <h3>🌍 Analogía del mundo real</h3>
+        <p>Es como buscar una palabra en un diccionario: <em>“Abres por la mitad, ves si la palabra está antes o después, y repites el proceso en esa mitad hasta encontrarla.”</em></p>
+
+        <h3>✅ Ventajas</h3>
+        <ul>
+            <li>Muy eficiente: O(log n) en lugar de O(n).</li>
+            <li>Ideal para grandes conjuntos de datos ordenados.</li>
+            <li>Cada paso elimina la mitad de los elementos restantes.</li>
+        </ul>
+
+        <h3>❌ Desventajas</h3>
+        <ul>
+            <li>Requiere que los datos estén ordenados.</li>
+            <li>No es aplicable a estructuras de datos no indexadas (como listas enlazadas simples).</li>
+        </ul>
+    </section>
+    <h2>🔹 Algoritmo de Búsqueda Binaria</h2>
+
+    <section class="simulation-box">
+        <h3>▶️ Simulación Interactiva - Paso a Paso</h3>
+        <p>Modifica el valor a buscar, luego usa los botones para avanzar o retroceder en la ejecución.</p>
+        
+        <div class="simulation-controls">
+            <input type="number" id="input-buscar" value="7" placeholder="Buscar">
+            <button id="btn-generar" class="btn">🔄 Generar Nuevo Array</button>
+            <button id="btn-reiniciar" class="btn">🔁 Reiniciar</button>
+            <button id="btn-anterior" class="btn" disabled>⬅️ Anterior</button>
+            <button id="btn-siguiente" class="btn">Siguiente ➡️</button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #4CAF50; border-color: #2E7D32;"></div>
+                <span>Inicio (Verde)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #F44336; border-color: #C62828;"></div>
+                <span>Fin (Rojo)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #2196F3; border-color: #0D47A1;"></div>
+                <span>Medio (Azul)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #FF9800; border-color: #E65100;"></div>
+                <span>Encontrado (Naranja)</span>
+            </div>
+        </div>
+
+        <div id="output-simulacion">
+            <p><strong>Salida:</strong> <span id="resultado">...</span></p>
+            <p><strong>Paso actual:</strong> <span id="paso">Esperando inicio...</span></p>
+            <div id="paso-indicator" class="paso-bar">
+                <div id="paso-progress"></div>
+            </div>
+            <div id="result-box" class="result-box">
+                <p id="result-message">Ingresa un valor y presiona "Reiniciar" para comenzar la búsqueda.</p>
+            </div>
+        </div>
+    </section>
+
+<section class="example-container">
+        <div class="code-and-array">
+            <!-- Código Java -->
+            <div class="code-box">
+                <h3>💻 Ejemplo Completo: Búsqueda Binaria en Java (con main)</h3>
+                <pre><code><span class="code-line" data-line="1">public class BusquedaBinaria {</span>
+<span class="code-line" data-line="2">    </span>
+<span class="code-line" data-line="3">    // Método que realiza la búsqueda binaria</span>
+<span class="code-line" data-line="4">    public static int buscar(int[] arr, int objetivo) {</span>
+<span class="code-line highlightable" data-line="5" id="line-init">        int inicio = 0;</span>
+<span class="code-line highlightable" data-line="6" id="line-end">        int fin = arr.length - 1;</span>
+<span class="code-line" data-line="7">        </span>
+<span class="code-line highlightable" data-line="8" id="line-while">        while (inicio <= fin) {</span>
+<span class="code-line highlightable" data-line="9" id="line-mid">            int medio = inicio + (fin - inicio) / 2;</span>
+<span class="code-line highlightable" data-line="10" id="line-compare">            if (arr[medio] == objetivo) {</span>
+<span class="code-line highlightable" data-line="11" id="line-return-found">                return medio;  // Elemento encontrado</span>
+<span class="code-line" data-line="12">            }</span>
+<span class="code-line highlightable" data-line="13" id="line-if-less">            if (arr[medio] < objetivo) {</span>
+<span class="code-line highlightable" data-line="14" id="line-start-update">                inicio = medio + 1;</span>
+<span class="code-line" data-line="15">            } else {</span>
+<span class="code-line highlightable" data-line="16" id="line-end-update">                fin = medio - 1;</span>
+<span class="code-line" data-line="17">            }</span>
+<span class="code-line" data-line="18">        }</span>
+<span class="code-line highlightable" data-line="19" id="line-notfound">        return -1;  // Elemento no encontrado</span>
+<span class="code-line" data-line="20">    }</span>
+<span class="code-line" data-line="21">    </span>
+<span class="code-line" data-line="22">    // Método main para probar el algoritmo</span>
+<span class="code-line" data-line="23">    public static void main(String[] args) {</span>
+<span class="code-line" data-line="24">        int[] numeros = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};</span>
+<span class="code-line" data-line="25">        int objetivo = 7;</span>
+<span class="code-line" data-line="26">        </span>
+<span class="code-line" data-line="27">        int resultado = buscar(numeros, objetivo);</span>
+<span class="code-line" data-line="28">        </span>
+<span class="code-line" data-line="29">        if (resultado != -1) {</span>
+<span class="code-line" data-line="30">            System.out.println("Elemento " + objetivo + " encontrado en la posición: " + resultado);</span>
+<span class="code-line" data-line="31">        } else {</span>
+<span class="code-line" data-line="32">            System.out.println("Elemento " + objetivo + " no encontrado.");</span>
+<span class="code-line" data-line="33">        }</span>
+<span class="code-line" data-line="34">    }</span>
+<span class="code-line" data-line="35">}</span></code></pre>
+            </div>
+
+            <!-- Representación del Array -->
+            <div class="array-box">
+                <h3>📊 Representación Visual del Array (Ordenado)</h3>
+                <div class="array-container" id="array-visual">
+                    <!-- Los elementos del array se generarán dinámicamente -->
+                </div>
+                <p><strong>Array actual:</strong> <span id="array-text">[ ]</span></p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class BusquedaBinariaSimulator {
+            constructor() {
+                this.currentStep = 0;
+                this.array = [];
+                this.objetivo = 7;
+                this.inicio = 0;
+                this.fin = 0;
+                this.medio = 0;
+                this.resultadoBusqueda = -1;
+                this.encontrado = false;
+                this.stepsHistory = [];
+                this.executionState = 'init'; // init, checking, calculating, comparing, updating, complete
+                this.currentLine = null;
+
+                this.initializeElements();
+                this.bindEvents();
+                this.generarArray();
+                this.reiniciar();
+            }
+
+            initializeElements() {
+                // Controles
+                this.inputBuscar = document.getElementById('input-buscar');
+                this.btnGenerar = document.getElementById('btn-generar');
+                this.btnReiniciar = document.getElementById('btn-reiniciar');
+                this.btnAnterior = document.getElementById('btn-anterior');
+                this.btnSiguiente = document.getElementById('btn-siguiente');
+
+                // Salida
+                this.resultadoEl = document.getElementById('resultado');
+                this.pasoEl = document.getElementById('paso');
+                this.pasoProgress = document.getElementById('paso-progress');
+                this.resultBox = document.getElementById('result-box');
+                this.resultMessage = document.getElementById('result-message');
+
+                // Código
+                this.lineInit = document.getElementById('line-init');
+                this.lineEnd = document.getElementById('line-end');
+                this.lineWhile = document.getElementById('line-while');
+                this.lineMid = document.getElementById('line-mid');
+                this.lineCompare = document.getElementById('line-compare');
+                this.lineReturnFound = document.getElementById('line-return-found');
+                this.lineIfLess = document.getElementById('line-if-less');
+                this.lineStartUpdate = document.getElementById('line-start-update');
+                this.lineEndUpdate = document.getElementById('line-end-update');
+                this.lineNotfound = document.getElementById('line-notfound');
+
+                // Array visual
+                this.arrayVisual = document.getElementById('array-visual');
+                this.arrayText = document.getElementById('array-text');
+            }
+
+            bindEvents() {
+                this.btnGenerar.addEventListener('click', () => this.generarArray());
+                this.btnReiniciar.addEventListener('click', () => this.reiniciar());
+                this.btnAnterior.addEventListener('click', () => this.pasoAnterior());
+                this.btnSiguiente.addEventListener('click', () => this.siguientePaso());
+                this.inputBuscar.addEventListener('input', () => {
+                    const value = parseInt(this.inputBuscar.value);
+                    if (!isNaN(value)) {
+                        this.objetivo = value;
+                    }
+                });
+            }
+
+            generarArray() {
+                // Generar un array de 10 elementos con números aleatorios entre 1 y 20
+                this.array = [];
+                for (let i = 0; i < 10; i++) {
+                    this.array.push(Math.floor(Math.random() * 20) + 1);
+                }
+                
+                // ¡IMPORTANTE! Ordenar el array para búsqueda binaria
+                this.array.sort((a, b) => a - b);
+                
+                // Actualizar la visualización
+                this.actualizarVisualizacionArray();
+                
+                // Reiniciar la simulación
+                this.reiniciar();
+            }
+
+            actualizarVisualizacionArray() {
+                // Limpiar el contenedor
+                this.arrayVisual.innerHTML = '';
+                
+                // Crear elementos visuales para cada elemento del array
+                for (let i = 0; i < this.array.length; i++) {
+                    const elemento = document.createElement('div');
+                    elemento.className = 'array-element';
+                    elemento.id = `element-${i}`;
+                    elemento.innerHTML = `
+                        <div class="array-index">${i}</div>
+                        ${this.array[i]}
+                    `;
+                    this.arrayVisual.appendChild(elemento);
+                }
+                
+                // Actualizar el texto del array
+                this.arrayText.textContent = `[${this.array.join(', ')}]`;
+            }
+
+            reiniciar() {
+                this.objetivo = parseInt(this.inputBuscar.value) || 7;
+                this.inicio = 0;
+                this.fin = this.array.length - 1;
+                this.medio = Math.floor(this.inicio + (this.fin - this.inicio) / 2);
+                this.resultadoBusqueda = -1;
+                this.encontrado = false;
+                this.currentStep = 0;
+                this.executionState = 'init';
+                this.currentLine = null;
+                this.stepsHistory = [];
+
+                this.resetAll();
+                this.actualizarIndicadoresArray();
+                this.pasoEl.textContent = "Estado inicial. Presiona 'Siguiente' para comenzar la búsqueda.";
+                this.resultadoEl.textContent = "...";
+                this.resultMessage.textContent = "La búsqueda aún no ha comenzado.";
+                this.resultBox.className = "result-box";
+                this.updateUI();
+            }
+
+            resetAll() {
+                // Resetear código - QUITAR TODOS los highlights
+                document.querySelectorAll('.code-line.highlight').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+
+                // Resetear elementos del array
+                for (let i = 0; i < this.array.length; i++) {
+                    const elemento = document.getElementById(`element-${i}`);
+                    if (elemento) {
+                        elemento.className = 'array-element';
+                    }
+                }
+            }
+
+            actualizarIndicadoresArray() {
+                // Resetear todos los indicadores
+                for (let i = 0; i < this.array.length; i++) {
+                    const elemento = document.getElementById(`element-${i}`);
+                    if (elemento) {
+                        // Remover todas las clases de estado
+                        elemento.classList.remove('start', 'end', 'middle', 'found', 'not-found');
+                        // Restablecer clase base
+                        elemento.className = 'array-element';
+                    }
+                }
+                
+                // Solo aplicar indicadores si estamos en estado de búsqueda
+                if (this.executionState !== 'complete') {
+                    // Aplicar indicadores actuales
+                    if (this.inicio >= 0 && this.inicio < this.array.length) {
+                        const elemInicio = document.getElementById(`element-${this.inicio}`);
+                        if (elemInicio) elemInicio.classList.add('start');
+                    }
+                    
+                    if (this.fin >= 0 && this.fin < this.array.length) {
+                        const elemFin = document.getElementById(`element-${this.fin}`);
+                        if (elemFin) elemFin.classList.add('end');
+                    }
+                    
+                    if (this.medio >= 0 && this.medio < this.array.length) {
+                        const elemMedio = document.getElementById(`element-${this.medio}`);
+                        if (elemMedio) elemMedio.classList.add('middle');
+                    }
+                }
+                
+                // Si se encontró el elemento, resaltarlo (sobreescribe otros estilos)
+                if (this.encontrado && this.resultadoBusqueda >= 0) {
+                    const elementoEncontrado = document.getElementById(`element-${this.resultadoBusqueda}`);
+                    if (elementoEncontrado) {
+                        elementoEncontrado.className = 'array-element found';
+                    }
+                }
+            }
+
+            guardarEstadoActual() {
+                const estado = {
+                    inicio: this.inicio,
+                    fin: this.fin,
+                    medio: this.medio,
+                    encontrado: this.encontrado,
+                    resultadoBusqueda: this.resultadoBusqueda,
+                    executionState: this.executionState,
+                    currentLine: this.currentLine,
+                    currentStep: this.currentStep
+                };
+                this.stepsHistory[this.currentStep] = {...estado};
+            }
+
+            restaurarEstadoAnterior() {
+                if (this.currentStep < this.stepsHistory.length && this.stepsHistory[this.currentStep]) {
+                    const estado = this.stepsHistory[this.currentStep];
+                    this.inicio = estado.inicio;
+                    this.fin = estado.fin;
+                    this.medio = estado.medio;
+                    this.encontrado = estado.encontrado;
+                    this.resultadoBusqueda = estado.resultadoBusqueda;
+                    this.executionState = estado.executionState;
+                    this.currentLine = estado.currentLine;
+                    
+                    // Resetear y volver a aplicar highlights según el estado guardado
+                    this.resetAll();
+                    if (this.currentLine) {
+                        const lineElement = document.getElementById(this.currentLine);
+                        if (lineElement) {
+                            lineElement.classList.add('highlight');
+                        }
+                    }
+                    this.actualizarIndicadoresArray();
+                }
+            }
+
+            async resaltarLinea(lineId, mensaje, duracion = 600) {
+                // Primero resetear todos los highlights
+                this.resetAll();
+                
+                // Resaltar solo la línea actual
+                const lineElement = document.getElementById(lineId);
+                if (lineElement) {
+                    lineElement.classList.add('highlight');
+                    this.currentLine = lineId;
+                }
+                
+                // Actualizar el mensaje
+                this.pasoEl.textContent = mensaje;
+                
+                // Actualizar indicadores del array
+                this.actualizarIndicadoresArray();
+                
+                // Esperar la duración especificada
+                await this.sleep(duracion);
+            }
+
+            async siguientePaso() {
+                this.guardarEstadoActual();
+                this.currentStep++;
+                await this.ejecutarPaso(true);
+            }
+
+            async pasoAnterior() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    await this.ejecutarPaso(false);
+                }
+            }
+
+            async ejecutarPaso(isForward) {
+                if (!isForward) {
+                    this.restaurarEstadoAnterior();
+                    return;
+                }
+
+                // Paso 0: Estado inicial
+                if (this.currentStep === 0) {
+                    this.pasoEl.textContent = "Estado inicial. Presiona 'Siguiente' para comenzar la búsqueda.";
+                    this.updateUI();
+                    return;
+                }
+
+                // Fase de inicialización
+                if (this.executionState === 'init') {
+                    await this.resaltarLinea('line-init', `Inicializando: inicio = 0`, 600);
+                    await this.resaltarLinea('line-end', `Inicializando: fin = ${this.fin}`, 600);
+                    this.executionState = 'checking';
+                    return;
+                }
+
+                // Fase de verificación del bucle
+                if (this.executionState === 'checking') {
+                    // Verificar condición del while
+                    if (this.inicio > this.fin) {
+                        // Elemento no encontrado
+                        await this.resaltarLinea('line-notfound', "Búsqueda completada: Elemento no encontrado.", 800);
+                        this.encontrado = false;
+                        this.executionState = 'complete';
+                        
+                        this.resultadoEl.textContent = "-1";
+                        this.resultMessage.textContent = `El elemento ${this.objetivo} no se encuentra en el array.`;
+                        this.resultBox.className = "result-box result-not-found";
+                        
+                        // Marcar todos los elementos como no encontrados
+                        for (let i = 0; i < this.array.length; i++) {
+                            const elemento = document.getElementById(`element-${i}`);
+                            if (elemento) {
+                                elemento.className = 'array-element not-found';
+                            }
+                        }
+                        
+                        this.updateUI();
+                        return;
+                    }
+                    
+                    await this.resaltarLinea('line-while', `Verificando: inicio(${this.inicio}) <= fin(${this.fin})`, 600);
+                    this.executionState = 'calculating';
+                    return;
+                }
+
+                // Fase de cálculo del medio
+                if (this.executionState === 'calculating') {
+                    this.medio = Math.floor(this.inicio + (this.fin - this.inicio) / 2);
+                    await this.resaltarLinea('line-mid', `Calculando posición media: medio = ${this.medio}`, 600);
+                    this.executionState = 'comparing';
+                    return;
+                }
+
+                // Fase de comparación
+                if (this.executionState === 'comparing') {
+                    await this.resaltarLinea('line-compare', `Comparando: array[${this.medio}] = ${this.array[this.medio]} con objetivo ${this.objetivo}`, 600);
+                    
+                    if (this.array[this.medio] === this.objetivo) {
+                        // ¡Elemento encontrado!
+                        await this.resaltarLinea('line-return-found', `¡Elemento ${this.objetivo} encontrado en la posición ${this.medio}!`, 800);
+                        this.encontrado = true;
+                        this.resultadoBusqueda = this.medio;
+                        this.executionState = 'complete';
+                        
+                        this.resultadoEl.textContent = `Posición: ${this.medio}`;
+                        this.resultMessage.textContent = `¡Éxito! El elemento ${this.objetivo} se encuentra en la posición ${this.medio}.`;
+                        this.resultBox.className = "result-box result-found";
+                        
+                        // Resaltar el elemento encontrado
+                        this.actualizarIndicadoresArray();
+                        this.updateUI();
+                        return;
+                    } else if (this.array[this.medio] < this.objetivo) {
+                        // Buscar en la mitad derecha
+                        await this.resaltarLinea('line-if-less', `Elemento en medio (${this.array[this.medio]}) es menor que el objetivo (${this.objetivo}). Buscando en mitad derecha.`, 600);
+                        this.executionState = 'updating-right';
+                        return;
+                    } else {
+                        // Buscar en la mitad izquierda
+                        await this.resaltarLinea('line-if-less', `Elemento en medio (${this.array[this.medio]}) es mayor que el objetivo (${this.objetivo}). Buscando en mitad izquierda.`, 600);
+                        this.executionState = 'updating-left';
+                        return;
+                    }
+                }
+
+                // Fase de actualización - mitad derecha
+                if (this.executionState === 'updating-right') {
+                    const nuevoInicio = this.medio + 1;
+                    this.inicio = nuevoInicio;
+                    await this.resaltarLinea('line-start-update', `Actualizando: inicio = ${nuevoInicio}`, 600);
+                    this.resultadoEl.textContent = "Buscando...";
+                    this.resultMessage.textContent = `Buscando en la mitad derecha [${this.inicio}, ${this.fin}]`;
+                    this.resultBox.className = "result-box";
+                    this.executionState = 'checking'; // Volver a verificar condición del while
+                    return;
+                }
+
+                // Fase de actualización - mitad izquierda
+                if (this.executionState === 'updating-left') {
+                    const nuevoFin = this.medio - 1;
+                    this.fin = nuevoFin;
+                    await this.resaltarLinea('line-end-update', `Actualizando: fin = ${nuevoFin}`, 600);
+                    this.resultadoEl.textContent = "Buscando...";
+                    this.resultMessage.textContent = `Buscando en la mitad izquierda [${this.inicio}, ${this.fin}]`;
+                    this.resultBox.className = "result-box";
+                    this.executionState = 'checking'; // Volver a verificar condición del while
+                    return;
+                }
+
+                this.updateUI();
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            updateUI() {
+                // Actualizar botones
+                this.btnAnterior.disabled = this.currentStep === 0;
+                this.btnSiguiente.disabled = this.executionState === 'complete';
+
+                // Actualizar barra de progreso
+                const progress = (this.currentStep / (this.array.length + 5)) * 100;
+                this.pasoProgress.style.width = `${Math.min(progress, 100)}%`;
+            }
+        }
+
+        // Inicializar simulación al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            new BusquedaBinariaSimulator();
+        });
+    </script>
+</body>
+</html>

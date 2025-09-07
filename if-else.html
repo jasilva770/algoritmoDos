@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estructura Condicional if-else - Diagrama Corregido</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        h2, h3 {
+            color: #2c3e50;
+        }
+        
+        h2 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        
+        .example-container {
+            margin: 2rem 0;
+        }
+
+        .code-and-diagram {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .code-box, .diagram-box {
+            flex: 1;
+            min-width: 340px;
+            box-sizing: border-box;
+        }
+
+        .code-box pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-box .comment {
+            color: #57a65b;
+        }
+
+        .code-line {
+            display: block;
+            padding: 3px 0;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .code-line.highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-left: 5px solid #ffc107;
+            padding-left: 15px;
+            margin-left: -15px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
+        }
+
+        .diagram-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .diagram-box h3 {
+            margin-top: 0;
+        }
+
+        .simulation-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 6px 12px rgba(33,150,243,0.2);
+        }
+
+        .simulation-controls {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #1565C0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #input-numero {
+            padding: 0.6rem;
+            font-size: 1.1rem;
+            border: 2px solid #90caf9;
+            border-radius: 8px;
+            width: 140px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #input-numero:focus {
+            outline: none;
+            border-color: #2196F3;
+            box-shadow: 0 0 0 3px rgba(33,150,243,0.3);
+        }
+
+        .paso-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #paso-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #2196F3);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .code-and-diagram {
+                flex-direction: column;
+            }
+            .diagram-box {
+                margin-top: 1.5rem;
+            }
+            #flowchart {
+                height: 600px;
+            }
+            .simulation-controls {
+                justify-content: center;
+            }
+        }
+
+        .flash {
+            animation: flash 1s infinite;
+        }
+        
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        
+        .flow-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+        
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        .highlight-element {
+            filter: url(#glow);
+        }
+        
+        .code-container {
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <section>
+        <h3>📌 ¿Qué es?</h3>
+        <p>La estructura <code>if-else</code> permite tomar decisiones binarias en tu programa: si se cumple una condición, se ejecuta un bloque; si no, se ejecuta otro.</p>
+        
+        <h3>🌍 Analogía del mundo real</h3>
+        <p>Es como decidir: <em>“Si está lloviendo, llevo paraguas; si no, llevo gafas de sol.”</em></p>
+
+        <h3>✅ Ventajas</h3>
+        <ul>
+            <li>Simple y fácil de entender.</li>
+            <li>Perfecta para decisiones con solo dos caminos.</li>
+        </ul>
+
+        <h3>❌ Desventajas</h3>
+        <ul>
+            <li>No escala bien para múltiples condiciones (mejor usar if-elseif-else o switch).</li>
+        </ul>
+    </section>
+    <h2>🔹 Estructura Condicional: if-else</h2>
+
+    <section class="simulation-box">
+        <h3>▶️ Simulación Interactiva - Paso a Paso</h3>
+        <p>Modifica el valor de <code>numero</code>, luego usa los botones para avanzar o retroceder en la ejecución.</p>
+        
+        <div class="simulation-controls">
+            <input type="number" id="input-numero" value="-5" placeholder="Ingresa un número">
+            <button id="btn-reiniciar" class="btn">🔄 Reiniciar</button>
+            <button id="btn-anterior" class="btn" disabled>⬅️ Anterior</button>
+            <button id="btn-siguiente" class="btn">Siguiente ➡️</button>
+        </div>
+
+        <div id="output-simulacion">
+            <p><strong>Salida:</strong> <span id="resultado">...</span></p>
+            <p><strong>Paso actual:</strong> <span id="paso">Esperando inicio...</span></p>
+            <div id="paso-indicator" class="paso-bar">
+                <div id="paso-progress"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="example-container">
+        <div class="code-and-diagram">
+            <!-- Código Java -->
+            <div class="code-box">
+                <h3>💻 Ejemplo: Verificar si un número es positivo o negativo</h3>
+                <pre><code><span class="code-line" data-line="1">public class EjemploIfElse {</span>
+<span class="code-line" data-line="2">    public static void main(String[] args) {</span>
+<span class="code-line" data-line="3">        int numero = <span id="code-numero">-5</span>;</span>
+<span class="code-line highlightable" data-line="4" id="line-condicion">        if (numero > 0) {</span>
+<span class="code-line highlightable" data-line="5" id="line-if">            System.out.println("Es positivo");</span>
+<span class="code-line" data-line="6">        } else {</span>
+<span class="code-line highlightable" data-line="7" id="line-else">            System.out.println("Es negativo o cero");</span>
+<span class="code-line" data-line="8">        }</span>
+<span class="code-line" data-line="9">    }</span>
+<span class="code-line" data-line="10">}</span></code></pre>
+            </div>
+
+            <!-- Diagrama de Flujo SVG Corregido con Rombo -->
+            <div class="diagram-box">
+                <h3>📊 Diagrama de Flujo Interactivo</h3>
+                <svg id="flowchart" width="100%" height="550" viewBox="0 0 500 550" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Definiciones -->
+                    <defs>
+                        <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                            <feMerge> 
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L10,3 z" fill="#333"/>
+                        </marker>
+                        <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L10,3 z" fill="#2E7D32"/>
+                        </marker>
+                        <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L10,3 z" fill="#D32F2F"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- INICIO (Círculo) -->
+                    <circle id="start" cx="250" cy="40" r="20" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="3"/>
+                    <text x="250" y="45" text-anchor="middle" fill="white" font-size="11" font-weight="bold">INICIO</text>
+                    
+                    <!-- Flecha desde Inicio -->
+                    <line x1="250" y1="60" x2="250" y2="120" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow)"/>
+                    
+                    <!-- CONDICIÓN (Rombo/Diamante) -->
+                    <g id="condicion-group">
+                        <path id="condicion" d="M250,120 L330,170 L250,220 L170,170 Z" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="3"/>
+                        <text x="250" y="165" text-anchor="middle" fill="white" font-size="11" font-weight="bold">IF</text>
+                        <text x="250" y="180" text-anchor="middle" fill="white" font-size="10" font-weight="bold">CONDITION</text>
+                    </g>
+                    
+                    <!-- Flecha TRUE (izquierda) -->
+                    <line id="flecha-true" x1="170" y1="170" x2="100" y2="170" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow-green)"/>
+                    <line x1="100" y1="170" x2="100" y2="250" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow-green)"/>
+                    <text x="135" y="165" text-anchor="middle" fill="#2E7D32" font-size="12" font-weight="bold">True</text>
+                    
+                    <!-- Bloque IF (izquierda) -->
+                    <rect id="bloque-if" x="40" y="250" width="120" height="50" rx="8" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="3"/>
+                    <text x="100" y="270" text-anchor="middle" fill="white" font-size="10" font-weight="bold">IF</text>
+                    <text x="100" y="285" text-anchor="middle" fill="white" font-size="10" font-weight="bold">CODE BLOCK</text>
+                    
+                    <!-- Flecha FALSE (derecha) -->
+                    <line id="flecha-false" x1="330" y1="170" x2="400" y2="170" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow-red)"/>
+                    <line x1="400" y1="170" x2="400" y2="250" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow-red)"/>
+                    <text x="365" y="165" text-anchor="middle" fill="#D32F2F" font-size="12" font-weight="bold">False</text>
+                    
+                    <!-- Bloque ELSE (derecha) -->
+                    <rect id="bloque-else" x="340" y="250" width="120" height="50" rx="8" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="3"/>
+                    <text x="400" y="270" text-anchor="middle" fill="white" font-size="10" font-weight="bold">ELSE</text>
+                    <text x="400" y="285" text-anchor="middle" fill="white" font-size="10" font-weight="bold">CODE BLOCK</text>
+                    
+                    <!-- Flechas hacia el punto de unión -->
+                    <line x1="100" y1="300" x2="100" y2="350" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow)"/>
+                    <line x1="400" y1="300" x2="400" y2="350" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow)"/>
+                    <line x1="100" y1="350" x2="230" y2="350" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow)"/>
+                    <line x1="400" y1="350" x2="270" y2="350" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow)"/>
+                    
+                    <!-- Punto de unión (opcional, puede ser invisible) -->
+                    <circle cx="250" cy="350" r="3" fill="#4A6B8A"/>
+                    
+                    <!-- Flecha hacia FIN -->
+                    <line x1="250" y1="353" x2="250" y2="420" stroke="#4A6B8A" stroke-width="3" marker-end="url(#arrow)"/>
+                    
+                    <!-- FIN (Círculo) -->
+                    <circle id="end" cx="250" cy="440" r="20" fill="#7E9DBE" stroke="#4A6B8A" stroke-width="3"/>
+                    <text x="250" y="445" text-anchor="middle" fill="white" font-size="11" font-weight="bold">FIN</text>
+                    
+                    <!-- Caminos resaltados (inicialmente ocultos) -->
+                    <g id="camino-true" style="display:none">
+                        <line x1="170" y1="170" x2="100" y2="170" stroke="#2E7D32" stroke-width="5" stroke-dasharray="8,4" opacity="0.8"/>
+                        <line x1="100" y1="170" x2="100" y2="250" stroke="#2E7D32" stroke-width="5" stroke-dasharray="8,4" opacity="0.8"/>
+                        <line x1="100" y1="300" x2="100" y2="350" stroke="#2E7D32" stroke-width="5" stroke-dasharray="8,4" opacity="0.8"/>
+                        <line x1="100" y1="350" x2="250" y2="350" stroke="#2E7D32" stroke-width="5" stroke-dasharray="8,4" opacity="0.8"/>
+                    </g>
+                    
+                    <g id="camino-false" style="display:none">
+                        <line x1="330" y1="170" x2="400" y2="170" stroke="#D32F2F" stroke-width="5" stroke-dasharray="8,4" opacity="0.8"/>
+                        <line x1="400" y1="170" x2="400" y2="250" stroke="#D32F2F" stroke-width="5" stroke-dasharray="8,4" opacity="0.8"/>
+                        <line x1="400" y1="300" x2="400" y2="350" stroke="#D32F2F" stroke-width="5" stroke-dasharray="8,4" opacity="0.8"/>
+                        <line x1="400" y1="350" x2="250" y2="350" stroke="#D32F2F" stroke-width="5" stroke-dasharray="8,4" opacity="0.8"/>
+                    </g>
+                    
+                    <!-- Etiquetas de ejecución -->
+                    <text id="label-if" x="100" y="320" text-anchor="middle" fill="#D32F2F" font-size="9" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                    <text id="label-else" x="400" y="320" text-anchor="middle" fill="#D32F2F" font-size="9" font-weight="bold" opacity="0">EJECUTANDO...</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        class IfElseSimulator {
+            constructor() {
+                this.currentStep = 0;
+                this.totalSteps = 3;
+                this.numero = -5;
+                this.resultado = null;
+                this.isConditionTrue = false;
+
+                this.initializeElements();
+                this.bindEvents();
+                this.updateUI();
+            }
+
+            initializeElements() {
+                // Controles
+                this.inputNumero = document.getElementById('input-numero');
+                this.btnReiniciar = document.getElementById('btn-reiniciar');
+                this.btnAnterior = document.getElementById('btn-anterior');
+                this.btnSiguiente = document.getElementById('btn-siguiente');
+
+                // Salida
+                this.resultadoEl = document.getElementById('resultado');
+                this.pasoEl = document.getElementById('paso');
+                this.pasoProgress = document.getElementById('paso-progress');
+
+                // Código
+                this.codeNumero = document.getElementById('code-numero');
+                this.lineCondicion = document.getElementById('line-condicion');
+                this.lineIf = document.getElementById('line-if');
+                this.lineElse = document.getElementById('line-else');
+
+                // SVG - Elementos corregidos
+                this.condicionGroup = document.getElementById('condicion-group');
+                this.condicion = document.getElementById('condicion');
+                this.bloqueIf = document.getElementById('bloque-if');
+                this.bloqueElse = document.getElementById('bloque-else');
+                this.caminoTrue = document.getElementById('camino-true');
+                this.caminoFalse = document.getElementById('camino-false');
+                this.labelIf = document.getElementById('label-if');
+                this.labelElse = document.getElementById('label-else');
+
+                // Guardar estados originales
+                this.originalColors = {
+                    condicion: this.condicion.getAttribute('fill'),
+                    condicionStroke: this.condicion.getAttribute('stroke'),
+                    bloqueIf: this.bloqueIf.getAttribute('fill'),
+                    bloqueIfStroke: this.bloqueIf.getAttribute('stroke'),
+                    bloqueElse: this.bloqueElse.getAttribute('fill'),
+                    bloqueElseStroke: this.bloqueElse.getAttribute('stroke')
+                };
+            }
+
+            bindEvents() {
+                this.btnReiniciar.addEventListener('click', () => this.reiniciar());
+                this.btnAnterior.addEventListener('click', () => this.pasoAnterior());
+                this.btnSiguiente.addEventListener('click', () => this.siguientePaso());
+                this.inputNumero.addEventListener('input', () => this.reiniciar());
+            }
+
+            reiniciar() {
+                this.numero = parseInt(this.inputNumero.value) || 0;
+                this.codeNumero.textContent = this.numero;
+                this.isConditionTrue = this.numero > 0;
+                this.resultado = null;
+                this.currentStep = 0;
+
+                this.resetAll();
+                this.updateUI();
+            }
+
+            resetAll() {
+                // Resetear código
+                document.querySelectorAll('.code-line.highlight').forEach(el => {
+                    el.classList.remove('highlight');
+                });
+
+                // Resetear SVG
+                this.condicion.setAttribute('fill', this.originalColors.condicion);
+                this.condicion.setAttribute('stroke', this.originalColors.condicionStroke);
+                this.condicion.setAttribute('filter', 'none');
+                this.bloqueIf.setAttribute('fill', this.originalColors.bloqueIf);
+                this.bloqueIf.setAttribute('stroke', this.originalColors.bloqueIfStroke);
+                this.bloqueIf.setAttribute('filter', 'none');
+                this.bloqueElse.setAttribute('fill', this.originalColors.bloqueElse);
+                this.bloqueElse.setAttribute('stroke', this.originalColors.bloqueElseStroke);
+                this.bloqueElse.setAttribute('filter', 'none');
+                this.caminoTrue.style.display = 'none';
+                this.caminoFalse.style.display = 'none';
+                
+                // Limpiar labels
+                this.labelIf.setAttribute('opacity', '0');
+                this.labelIf.classList.remove('flash');
+                this.labelElse.setAttribute('opacity', '0');
+                this.labelElse.classList.remove('flash');
+            }
+
+            siguientePaso() {
+                if (this.currentStep < this.totalSteps) {
+                    this.currentStep++;
+                    this.ejecutarPaso();
+                }
+            }
+
+            pasoAnterior() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    this.ejecutarPaso();
+                }
+            }
+
+            ejecutarPaso() {
+                this.resetAll();
+
+                switch (this.currentStep) {
+                    case 0:
+                        this.pasoEl.textContent = "Estado inicial. Presiona 'Siguiente' para comenzar.";
+                        this.resultado = null;
+                        break;
+
+                    case 1:
+                        this.pasoEl.textContent = `Paso 1: Evaluando condición 'numero > 0' → ${this.numero} > 0`;
+                        this.condicion.setAttribute('fill', '#FF9800');
+                        this.condicion.setAttribute('stroke', '#F57C00');
+                        this.condicion.setAttribute('filter', 'url(#glow)');
+                        this.lineCondicion.classList.add('highlight');
+                        break;
+
+                    case 2:
+                        if (this.isConditionTrue) {
+                            this.pasoEl.textContent = "Paso 2: Condición VERDADERA → Ejecutando bloque 'if'";
+                            this.resultado = "Es positivo";
+                            
+                            // Resaltar camino verdadero
+                            this.bloqueIf.setAttribute('fill', '#4CAF50');
+                            this.bloqueIf.setAttribute('stroke', '#2E7D32');
+                            this.bloqueIf.setAttribute('filter', 'url(#glow)');
+                            this.caminoTrue.style.display = 'block';
+                            this.lineIf.classList.add('highlight');
+                            this.labelIf.setAttribute('opacity', '1');
+                            this.labelIf.classList.add('flash');
+
+                        } else {
+                            this.pasoEl.textContent = "Paso 2: Condición FALSA → Ejecutando bloque 'else'";
+                            this.resultado = "Es negativo o cero";
+                            
+                            // Resaltar camino falso
+                            this.bloqueElse.setAttribute('fill', '#F44336');
+                            this.bloqueElse.setAttribute('stroke', '#D32F2F');
+                            this.bloqueElse.setAttribute('filter', 'url(#glow)');
+                            this.caminoFalse.style.display = 'block';
+                            this.lineElse.classList.add('highlight');
+                            this.labelElse.setAttribute('opacity', '1');
+                            this.labelElse.classList.add('flash');
+                        }
+                        break;
+
+                    case 3:
+                        this.pasoEl.textContent = "Paso 3: Ejecución completada.";
+                        this.resultadoEl.textContent = this.resultado;
+                        break;
+                }
+
+                this.updateUI();
+            }
+
+            updateUI() {
+                // Actualizar botones
+                this.btnAnterior.disabled = this.currentStep === 0;
+                this.btnSiguiente.disabled = this.currentStep === this.totalSteps;
+
+                // Actualizar barra de progreso
+                const progress = (this.currentStep / this.totalSteps) * 100;
+                this.pasoProgress.style.width = `${progress}%`;
+
+                // Actualizar resultado
+                if (this.currentStep === 3) {
+                    this.resultadoEl.textContent = this.resultado;
+                } else if (this.currentStep < 3) {
+                    this.resultadoEl.textContent = "...";
+                }
+            }
+        }
+
+        // Inicializar simulación al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            new IfElseSimulator();
+        });
+    </script>
+</body>
+</html>

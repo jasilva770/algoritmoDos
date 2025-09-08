@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordenamiento por Selección - Simulador Interactivo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+
+        h1 {
+            text-align: center;
+            border-bottom: 3px solid #e67e22;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            border-bottom: 2px solid #e67e22;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        .section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .code-and-array {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .code-box, .array-box {
+            flex: 1;
+            min-width: 340px;
+            box-sizing: border-box;
+        }
+
+        .code-box pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-line {
+            display: block;
+            padding: 3px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .code-line.highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-left: 5px solid #ffc107;
+            padding-left: 15px;
+            margin-left: -15px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
+        }
+
+        .array-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .array-box h3 {
+            margin-top: 0;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .array-element {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #e67e22;
+            color: white;
+            margin: 3px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .array-index {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            position: absolute;
+            top: -20px;
+            background: #d35400;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .array-element.min {
+            background: #e74c3c;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(231, 76, 54, 0.7);
+        }
+
+        .array-element.selected {
+            background: #f39c12;
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(243, 156, 18, 0.7);
+        }
+
+        .array-element.sorted {
+            background: #27ae60;
+            box-shadow: 0 0 15px rgba(39, 174, 96, 0.7);
+            transform: scale(1.05);
+        }
+
+        .simulation-box {
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 6px 12px rgba(230, 126, 34, 0.2);
+        }
+
+        .simulation-controls {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #e67e22;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #d35400;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .paso-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #paso-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #e67e22);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .result-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #e67e22;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .step-explanation {
+            background: #e8f5e9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #4CAF50;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .code-and-array {
+                flex-direction: column;
+            }
+            .array-box {
+                margin-top: 1.5rem;
+            }
+            .simulation-controls {
+                justify-content: center;
+            }
+            .array-element {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                margin: 2px;
+            }
+            .array-container {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <h1><strong>📚 Ordenamiento por Selección</strong></h1>
+
+    <!-- Sección: ¿Qué es? -->
+    <section class="section">
+        <h2>📌 ¿Qué es?</h2>
+        <p>El <strong>ordenamiento por selección</strong> es un algoritmo que divide el array en dos partes: la parte ordenada (al principio) y la parte desordenada (al final). En cada iteración, selecciona el elemento más pequeño de la parte desordenada y lo intercambia con el primer elemento de esa parte.</p>
+        
+        <h3>🌍 Analogía del mundo real</h3>
+        <p>Es como ordenar una pila de exámenes por calificación: <em>“Buscas el examen con la calificación más baja, lo pones al principio. Luego buscas el siguiente más bajo y lo pones después del primero, y así sucesivamente.”</em></p>
+    </section>
+
+    <!-- Sección: Ventajas y Desventajas -->
+    <section class="section">
+        <h2>✅ Ventajas</h2>
+        <ul>
+            <li>Fácil de entender e implementar.</li>
+            <li>Realiza un número fijo de intercambios (n-1).</li>
+            <li>Útil cuando el costo de intercambio es alto.</li>
+        </ul>
+
+        <h2>❌ Desventajas</h2>
+        <ul>
+            <li>Ineficiente para grandes conjuntos: O(n²).</li>
+            <li>No es estable: puede cambiar el orden relativo de elementos iguales.</li>
+            <li>No mejora con arrays casi ordenados.</li>
+        </ul>
+    </section>
+
+    <!-- Sección: Simulación -->
+    <section class="simulation-box">
+        <h2>▶️ Simulación Interactiva - Paso a Paso</h2>
+        <p>Modifica el tamaño del array o genera uno nuevo, luego usa los botones para avanzar o retroceder en la ejecución.</p>
+        
+        <div class="simulation-controls">
+            <button id="btn-generar" class="btn">🔄 Generar Nuevo Array</button>
+            <button id="btn-reiniciar" class="btn">🔁 Reiniciar</button>
+            <button id="btn-anterior" class="btn" disabled>⬅️ Anterior</button>
+            <button id="btn-siguiente" class="btn">Siguiente ➡️</button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e67e22; border-color: white;"></div>
+                <span>Elemento normal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e74c3c; border-color: white;"></div>
+                <span>Mínimo encontrado (Rojo)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #f39c12; border-color: white;"></div>
+                <span>Comparando/Seleccionando (Naranja)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #27ae60; border-color: white;"></div>
+                <span>Ordenado (Verde)</span>
+            </div>
+        </div>
+
+        <div id="output-simulacion">
+            <div id="step-explanation" class="step-explanation">
+                ¡Bienvenido a la simulación interactiva del Ordenamiento por Selección!<br><br>
+                Presiona "Siguiente" para ver cómo se selecciona el mínimo en cada iteración.
+            </div>
+            <p><strong>Paso actual:</strong> <span id="paso">Esperando inicio...</span></p>
+            <div id="paso-indicator" class="paso-bar">
+                <div id="paso-progress"></div>
+            </div>
+            <div id="result-box" class="result-box">
+                <p id="result-message">El ordenamiento aún no ha comenzado.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Código y Visualización -->
+    <section class="example-container">
+        <div class="code-and-array">
+            <!-- Código Java -->
+            <div class="code-box">
+                <h3>💻 Ejemplo Completo: Ordenamiento por Selección en Java</h3>
+                <pre><code><span class="code-line" data-line="1">public class SelectionSort {</span>
+<span class="code-line" data-line="2">    </span>
+<span class="code-line" data-line="3">    // Método principal de ordenamiento por selección</span>
+<span class="code-line highlightable" data-line="4" id="line-main-method">    public static void selectionSort(int[] arr) {</span>
+<span class="code-line highlightable" data-line="5" id="line-outer-loop">        for (int i = 0; i < arr.length - 1; i++) {</span>
+<span class="code-line highlightable" data-line="6" id="line-min-index">            int minIndex = i;</span>
+<span class="code-line highlightable" data-line="7" id="line-inner-loop">            for (int j = i + 1; j < arr.length; j++) {</span>
+<span class="code-line highlightable" data-line="8" id="line-compare">                if (arr[j] < arr[minIndex]) {</span>
+<span class="code-line highlightable" data-line="9" id="line-update-min">                    minIndex = j;</span>
+<span class="code-line" data-line="10">                }</span>
+<span class="code-line" data-line="11">            }</span>
+<span class="code-line highlightable" data-line="12" id="line-swap">            // Intercambiar arr[i] con arr[minIndex]</span>
+<span class="code-line highlightable" data-line="13" id="line-swap-code">            int temp = arr[i];</span>
+<span class="code-line highlightable" data-line="14" id="line-swap-code2">            arr[i] = arr[minIndex];</span>
+<span class="code-line highlightable" data-line="15" id="line-swap-code3">            arr[minIndex] = temp;</span>
+<span class="code-line" data-line="16">        }</span>
+<span class="code-line" data-line="17">    }</span>
+<span class="code-line" data-line="18">    </span>
+<span class="code-line" data-line="19">    // Método main para probar el algoritmo</span>
+<span class="code-line" data-line="20">    public static void main(String[] args) {</span>
+<span class="code-line" data-line="21">        int[] numeros = {64, 34, 25, 12, 22, 11, 90};</span>
+<span class="code-line" data-line="22">        System.out.println("Array original: " + java.util.Arrays.toString(numeros));</span>
+<span class="code-line" data-line="23">        selectionSort(numeros);</span>
+<span class="code-line" data-line="24">        System.out.println("Array ordenado: " + java.util.Arrays.toString(numeros));</span>
+<span class="code-line" data-line="25">    }</span>
+<span class="code-line" data-line="26">}</span></code></pre>
+            </div>
+
+            <!-- Representación del Array -->
+            <div class="array-box">
+                <h3>📊 Representación Visual del Array</h3>
+                <div class="array-container" id="array-visual">
+                    <!-- Elementos se generarán dinámicamente -->
+                </div>
+                <p><strong>Tamaño del array:</strong> <span id="array-size">7</span></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Script -->
+    <script>
+        class SelectionSortSimulator {
+            constructor() {
+                this.currentStep = 0;
+                this.array = [];
+                this.originalArray = [];
+                this.size = 7;
+                this.i = 0; // Índice del bucle externo (posición a llenar)
+                this.j = 0; // Índice del bucle interno (búsqueda del mínimo)
+                this.minIndex = 0;
+                this.stepsHistory = [];
+                this.currentLine = null;
+                this.isRunning = false;
+                this.phase = 'init'; // init, outer_loop, inner_loop, compare, update_min, swap, complete
+
+                this.initializeElements();
+                this.bindEvents();
+                this.generarArray();
+                this.reiniciar();
+            }
+
+            initializeElements() {
+                this.btnGenerar = document.getElementById('btn-generar');
+                this.btnReiniciar = document.getElementById('btn-reiniciar');
+                this.btnAnterior = document.getElementById('btn-anterior');
+                this.btnSiguiente = document.getElementById('btn-siguiente');
+                this.stepExplanation = document.getElementById('step-explanation');
+
+                this.pasoEl = document.getElementById('paso');
+                this.pasoProgress = document.getElementById('paso-progress');
+                this.resultBox = document.getElementById('result-box');
+                this.resultMessage = document.getElementById('result-message');
+                this.arraySizeEl = document.getElementById('array-size');
+
+                this.codeLines = {};
+                const lineIds = [
+                    'line-main-method', 'line-outer-loop', 'line-min-index',
+                    'line-inner-loop', 'line-compare', 'line-update-min',
+                    'line-swap', 'line-swap-code', 'line-swap-code2', 'line-swap-code3'
+                ];
+                lineIds.forEach(id => {
+                    this.codeLines[id] = document.getElementById(id);
+                });
+
+                this.arrayVisual = document.getElementById('array-visual');
+            }
+
+            bindEvents() {
+                this.btnGenerar.addEventListener('click', () => this.generarArray());
+                this.btnReiniciar.addEventListener('click', () => this.reiniciar());
+                this.btnAnterior.addEventListener('click', () => this.pasoAnterior());
+                this.btnSiguiente.addEventListener('click', () => this.siguientePaso());
+            }
+
+            generarArray() {
+                this.array = [];
+                for (let i = 0; i < this.size; i++) {
+                    this.array.push(Math.floor(Math.random() * 50) + 1);
+                }
+                this.originalArray = [...this.array];
+                this.actualizarVisualizacionArray();
+                this.reiniciar();
+            }
+
+            actualizarVisualizacionArray() {
+                this.arrayVisual.innerHTML = '';
+                for (let i = 0; i < this.array.length; i++) {
+                    const elemento = document.createElement('div');
+                    elemento.className = 'array-element';
+                    elemento.id = `element-${i}`;
+                    elemento.innerHTML = `
+                        <div class="array-index">${i}</div>
+                        ${this.array[i]}
+                    `;
+                    this.arrayVisual.appendChild(elemento);
+                }
+                this.arraySizeEl.textContent = this.array.length;
+            }
+
+            reiniciar() {
+                this.currentStep = 0;
+                this.i = 0;
+                this.j = 0;
+                this.minIndex = 0;
+                this.stepsHistory = [];
+                this.isRunning = false;
+                this.phase = 'init';
+
+                this.resetAll();
+                this.stepExplanation.innerHTML = "¡Bienvenido a la simulación interactiva del Ordenamiento por Selección!<br><br>Presiona \"Siguiente\" para ver cómo se selecciona el mínimo en cada iteración.";
+                this.pasoEl.textContent = "Estado inicial. Presiona 'Siguiente' para comenzar.";
+                this.resultMessage.textContent = "El ordenamiento aún no ha comenzado.";
+                this.resultBox.className = "result-box";
+                this.updateUI();
+            }
+
+            resetAll() {
+                document.querySelectorAll('.code-line.highlight').forEach(el => el.classList.remove('highlight'));
+                for (let i = 0; i < this.array.length; i++) {
+                    const el = document.getElementById(`element-${i}`);
+                    if (el) el.className = 'array-element';
+                }
+            }
+
+            actualizarIndicadoresArray() {
+                for (let i = 0; i < this.array.length; i++) {
+                    const el = document.getElementById(`element-${i}`);
+                    if (el) el.classList.remove('min', 'selected', 'sorted');
+                }
+
+                // Marcar elementos ordenados
+                for (let k = 0; k < this.i; k++) {
+                    const el = document.getElementById(`element-${k}`);
+                    if (el) el.classList.add('sorted');
+                }
+
+                // Marcar minIndex actual
+                if (this.minIndex >= 0 && this.minIndex < this.array.length) {
+                    const el = document.getElementById(`element-${this.minIndex}`);
+                    if (el) el.classList.add('min');
+                }
+
+                // Marcar elemento que se está comparando (j)
+                if (this.j >= 0 && this.j < this.array.length) {
+                    const el = document.getElementById(`element-${this.j}`);
+                    if (el) el.classList.add('selected');
+                }
+            }
+
+            guardarEstadoActual() {
+                const estado = {
+                    currentStep: this.currentStep,
+                    array: [...this.array],
+                    i: this.i,
+                    j: this.j,
+                    minIndex: this.minIndex,
+                    phase: this.phase,
+                    currentLine: this.currentLine
+                };
+                this.stepsHistory[this.currentStep] = {...estado};
+            }
+
+            restaurarEstadoAnterior() {
+                if (this.currentStep < this.stepsHistory.length && this.stepsHistory[this.currentStep]) {
+                    const estado = this.stepsHistory[this.currentStep];
+                    this.array = [...estado.array];
+                    this.i = estado.i;
+                    this.j = estado.j;
+                    this.minIndex = estado.minIndex;
+                    this.phase = estado.phase;
+                    this.currentLine = estado.currentLine;
+
+                    this.resetAll();
+                    if (this.currentLine && this.codeLines[this.currentLine]) {
+                        this.codeLines[this.currentLine].classList.add('highlight');
+                    }
+
+                    this.actualizarVisualizacionArray();
+                    this.actualizarIndicadoresArray();
+                }
+            }
+
+            async resaltarLinea(lineId, mensaje) {
+                this.resetAll();
+                if (lineId && this.codeLines[lineId]) {
+                    this.codeLines[lineId].classList.add('highlight');
+                    this.currentLine = lineId;
+                }
+                this.pasoEl.textContent = mensaje;
+                this.actualizarVisualizacionArray();
+                this.actualizarIndicadoresArray();
+                await this.sleep(600);
+            }
+
+            async siguientePaso() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+
+                this.guardarEstadoActual();
+                this.currentStep++;
+
+                if (this.currentStep === 1) {
+                    await this.resaltarLinea('line-main-method', "Iniciando el método selectionSort");
+                    this.phase = 'outer_loop';
+                }
+
+                // Si ya terminamos
+                if (this.i >= this.array.length - 1) {
+                    this.terminarSimulacion();
+                    this.isRunning = false;
+                    return;
+                }
+
+                switch (this.phase) {
+                    case 'outer_loop':
+                        await this.ejecutarPasoOuterLoop();
+                        break;
+                    case 'inner_loop':
+                        await this.ejecutarPasoInnerLoop();
+                        break;
+                    case 'compare':
+                        await this.ejecutarPasoCompare();
+                        break;
+                    case 'update_min':
+                        await this.ejecutarPasoUpdateMin();
+                        break;
+                    case 'swap':
+                        await this.ejecutarPasoSwap();
+                        break;
+                }
+
+                this.isRunning = false;
+                this.updateUI();
+            }
+
+            async ejecutarPasoOuterLoop() {
+                await this.resaltarLinea('line-outer-loop', `Iniciando iteración ${this.i + 1}: buscando mínimo desde posición ${this.i}`);
+                await this.resaltarLinea('line-min-index', `minIndex = ${this.i} (asumimos que el mínimo está en la posición actual)`);
+                this.minIndex = this.i;
+                this.j = this.i + 1;
+                this.phase = 'inner_loop';
+            }
+
+            async ejecutarPasoInnerLoop() {
+                if (this.j >= this.array.length) {
+                    // Terminó la búsqueda del mínimo
+                    this.phase = 'swap';
+                    return;
+                }
+                await this.resaltarLinea('line-inner-loop', `Buscando mínimo: comparando desde posición ${this.j}`);
+                this.phase = 'compare';
+            }
+
+            async ejecutarPasoCompare() {
+                await this.resaltarLinea('line-compare', `¿arr[${this.j}] = ${this.array[this.j]} < arr[minIndex] = ${this.array[this.minIndex]}?`);
+                if (this.array[this.j] < this.array[this.minIndex]) {
+                    this.phase = 'update_min';
+                } else {
+                    this.j++;
+                    this.phase = 'inner_loop';
+                }
+            }
+
+            async ejecutarPasoUpdateMin() {
+                await this.resaltarLinea('line-update-min', `¡Sí! Actualizando minIndex = ${this.j}`);
+                this.minIndex = this.j;
+                this.j++;
+                this.phase = 'inner_loop';
+            }
+
+            async ejecutarPasoSwap() {
+                await this.resaltarLinea('line-swap', `Intercambiando arr[${this.i}] con arr[${this.minIndex}]`);
+                await this.resaltarLinea('line-swap-code', `temp = arr[${this.i}] = ${this.array[this.i]}`);
+                const temp = this.array[this.i];
+                
+                await this.resaltarLinea('line-swap-code2', `arr[${this.i}] = arr[${this.minIndex}] = ${this.array[this.minIndex]}`);
+                this.array[this.i] = this.array[this.minIndex];
+                this.actualizarVisualizacionArray();
+                this.actualizarIndicadoresArray();
+                await this.sleep(400);
+                
+                await this.resaltarLinea('line-swap-code3', `arr[${this.minIndex}] = temp = ${temp}`);
+                this.array[this.minIndex] = temp;
+                this.actualizarVisualizacionArray();
+                this.actualizarIndicadoresArray();
+                await this.sleep(400);
+
+                // Avanzar al siguiente elemento
+                this.i++;
+                this.phase = 'outer_loop';
+            }
+
+            async pasoAnterior() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    this.restaurarEstadoAnterior();
+                    this.updateUI();
+                }
+            }
+
+            terminarSimulacion() {
+                this.resetAll();
+                this.stepExplanation.innerHTML = "✅ ¡Ordenamiento completado!<br><br>El array está completamente ordenado. El algoritmo de selección ha terminado.";
+                this.pasoEl.textContent = "Ordenamiento completado.";
+                this.resultMessage.textContent = "El array ha sido ordenado exitosamente.";
+                this.resultBox.className = "result-box";
+                this.btnSiguiente.disabled = true;
+                this.updateUI();
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            updateUI() {
+                this.btnAnterior.disabled = this.currentStep <= 0;
+                this.btnSiguiente.disabled = this.i >= this.array.length - 1 && this.phase === 'swap';
+
+                let totalPasos = this.array.length - 1;
+                let pasosActuales = this.i;
+                let progress = totalPasos > 0 ? (pasosActuales / totalPasos) * 100 : 0;
+                this.pasoProgress.style.width = `${Math.min(progress, 100)}%`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            new SelectionSortSimulator();
+        });
+    </script>
+</body>
+</html>

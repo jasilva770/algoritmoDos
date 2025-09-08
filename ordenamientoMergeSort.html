@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordenamiento por Mezcla (Merge Sort) - Simulador Interactivo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+
+        h1, h2, h3 {
+            color: #8e44ad;
+        }
+
+        h1 {
+            text-align: center;
+            border-bottom: 3px solid #8e44ad;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        h2 {
+            border-bottom: 2px solid #8e44ad;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        .section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .code-and-array {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .code-box, .array-box {
+            flex: 1;
+            min-width: 340px;
+            box-sizing: border-box;
+        }
+
+        .code-box pre {
+            background: #1e1e1e;
+            color: #dcdcdc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .code-line {
+            display: block;
+            padding: 3px 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .code-line.highlight {
+            background-color: #ffeb3b;
+            color: #000;
+            border-left: 5px solid #ffc107;
+            padding-left: 15px;
+            margin-left: -15px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255,235,59,0.5);
+        }
+
+        .array-box {
+            background: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .array-box h3 {
+            margin-top: 0;
+        }
+
+        .array-container {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .array-element {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #8e44ad;
+            color: white;
+            margin: 3px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .array-index {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            position: absolute;
+            top: -20px;
+            background: #6c3483;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .array-element.dividing {
+            background: #3498db;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.7);
+        }
+
+        .array-element.merging {
+            background: #e67e22;
+            transform: scale(1.15);
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.7);
+        }
+
+        .array-element.sorted {
+            background: #27ae60;
+            box-shadow: 0 0 15px rgba(39, 174, 96, 0.7);
+            transform: scale(1.05);
+        }
+
+        .simulation-box {
+            background: linear-gradient(135deg, #f5eef8, #d7bde2);
+            padding: 1.8rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            box-shadow: 0 6px 12px rgba(142, 68, 173, 0.2);
+        }
+
+        .simulation-controls {
+            margin: 1.5rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            background: #8e44ad;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #6c3483;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdbdbd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .paso-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        #paso-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #8e44ad);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .result-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #8e44ad;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .step-explanation {
+            background: #e8f5e9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #4CAF50;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .code-and-array {
+                flex-direction: column;
+            }
+            .array-box {
+                margin-top: 1.5rem;
+            }
+            .simulation-controls {
+                justify-content: center;
+            }
+            .array-element {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                margin: 2px;
+            }
+            .array-container {
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Encabezado -->
+    <h1><strong>📚 Ordenamiento por Mezcla (Merge Sort)</strong></h1>
+
+    <!-- Sección: ¿Qué es? -->
+    <section class="section">
+        <h2>📌 ¿Qué es?</h2>
+        <p>El <strong>ordenamiento por mezcla (Merge Sort)</strong> es un algoritmo eficiente y estable que sigue la estrategia <em>“divide y vencerás”</em>. Divide el array en mitades, ordena cada mitad recursivamente y luego fusiona las mitades ordenadas.</p>
+        
+        <h3>🌍 Analogía del mundo real</h3>
+        <p>Es como ordenar una pila de exámenes dividiéndola en dos pilas más pequeñas, ordenando cada una por separado y luego combinándolas en orden: <em>“Divide, ordena, y luego mezcla manteniendo el orden.”</em></p>
+    </section>
+
+    <!-- Sección: Ventajas y Desventajas -->
+    <section class="section">
+        <h2>✅ Ventajas</h2>
+        <ul>
+            <li>Complejidad garantizada: O(n log n) en todos los casos.</li>
+            <li>Estable: mantiene el orden relativo de elementos iguales.</li>
+            <li>Ideal para grandes volúmenes de datos.</li>
+            <li>Excelente ejemplo de recursión y divide y vencerás.</li>
+        </ul>
+
+        <h2>❌ Desventajas</h2>
+        <ul>
+            <li>Requiere espacio adicional O(n) para el array temporal.</li>
+            <li>Para arrays pequeños, es más lento que algoritmos simples (por la sobrecarga de recursión).</li>
+        </ul>
+    </section>
+
+    <!-- Sección: Simulación -->
+    <section class="simulation-box">
+        <h2>▶️ Simulación Interactiva - Paso a Paso</h2>
+        <p>Genera un array y usa los botones para ver cómo se divide y fusiona recursivamente.</p>
+        
+        <div class="simulation-controls">
+            <button id="btn-generar" class="btn">🔄 Generar Nuevo Array</button>
+            <button id="btn-reiniciar" class="btn">🔁 Reiniciar</button>
+            <button id="btn-anterior" class="btn" disabled>⬅️ Anterior</button>
+            <button id="btn-siguiente" class="btn">Siguiente ➡️</button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: #8e44ad; border-color: white;"></div>
+                <span>Elemento normal</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #3498db; border-color: white;"></div>
+                <span>Dividiendo (Azul)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #e67e22; border-color: white;"></div>
+                <span>Fusionando (Naranja)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #27ae60; border-color: white;"></div>
+                <span>Ordenado (Verde)</span>
+            </div>
+        </div>
+
+        <div id="output-simulacion">
+            <div id="step-explanation" class="step-explanation">
+                ¡Bienvenido a la simulación interactiva del Merge Sort!<br><br>
+                Presiona "Siguiente" para ver cómo se divide y fusiona el array recursivamente.
+            </div>
+            <p><strong>Paso actual:</strong> <span id="paso">Esperando inicio...</span></p>
+            <div id="paso-indicator" class="paso-bar">
+                <div id="paso-progress"></div>
+            </div>
+            <div id="result-box" class="result-box">
+                <p id="result-message">El ordenamiento aún no ha comenzado.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección: Código y Visualización -->
+    <section class="example-container">
+        <div class="code-and-array">
+            <!-- Código Java -->
+            <div class="code-box">
+                <h3>💻 Ejemplo Completo: Merge Sort en Java</h3>
+                <pre><code><span class="code-line" data-line="1">public class MergeSort {</span>
+<span class="code-line" data-line="2">    </span>
+<span class="code-line highlightable" data-line="3" id="line-main-method">    public static void mergeSort(int[] arr, int left, int right) {</span>
+<span class="code-line highlightable" data-line="4" id="line-base-case">        if (left < right) {</span>
+<span class="code-line highlightable" data-line="5" id="line-mid">            int mid = (left + right) / 2;</span>
+<span class="code-line highlightable" data-line="6" id="line-divide-left">            mergeSort(arr, left, mid);</span>
+<span class="code-line highlightable" data-line="7" id="line-divide-right">            mergeSort(arr, mid + 1, right);</span>
+<span class="code-line highlightable" data-line="8" id="line-merge">            merge(arr, left, mid, right);</span>
+<span class="code-line" data-line="9">        }</span>
+<span class="code-line" data-line="10">    }</span>
+<span class="code-line" data-line="11">    </span>
+<span class="code-line highlightable" data-line="12" id="line-merge-method">    public static void merge(int[] arr, int left, int mid, int right) {</span>
+<span class="code-line highlightable" data-line="13" id="line-create-temp">        int n1 = mid - left + 1;</span>
+<span class="code-line highlightable" data-line="14" id="line-create-temp2">        int n2 = right - mid;</span>
+<span class="code-line" data-line="15">        </span>
+<span class="code-line highlightable" data-line="16" id="line-init-temp">        int[] L = new int[n1];</span>
+<span class="code-line highlightable" data-line="17" id="line-init-temp2">        int[] R = new int[n2];</span>
+<span class="code-line" data-line="18">        </span>
+<span class="code-line highlightable" data-line="19" id="line-copy-left">        for (int i = 0; i < n1; i++)</span>
+<span class="code-line highlightable" data-line="20" id="line-copy-left2">            L[i] = arr[left + i];</span>
+<span class="code-line highlightable" data-line="21" id="line-copy-right">        for (int j = 0; j < n2; j++)</span>
+<span class="code-line highlightable" data-line="22" id="line-copy-right2">            R[j] = arr[mid + 1 + j];</span>
+<span class="code-line" data-line="23">        </span>
+<span class="code-line highlightable" data-line="24" id="line-merge-start">        int i = 0, j = 0, k = left;</span>
+<span class="code-line highlightable" data-line="25" id="line-merge-loop">        while (i < n1 && j < n2) {</span>
+<span class="code-line highlightable" data-line="26" id="line-compare-merge">            if (L[i] <= R[j]) {</span>
+<span class="code-line highlightable" data-line="27" id="line-assign-left">                arr[k] = L[i];</span>
+<span class="code-line highlightable" data-line="28" id="line-i++">                i++;</span>
+<span class="code-line" data-line="29">            } else {</span>
+<span class="code-line highlightable" data-line="30" id="line-assign-right">                arr[k] = R[j];</span>
+<span class="code-line highlightable" data-line="31" id="line-j++">                j++;</span>
+<span class="code-line" data-line="32">            }</span>
+<span class="code-line highlightable" data-line="33" id="line-k++">            k++;</span>
+<span class="code-line" data-line="34">        }</span>
+<span class="code-line" data-line="35">        </span>
+<span class="code-line highlightable" data-line="36" id="line-copy-remaining-left">        while (i < n1) {</span>
+<span class="code-line highlightable" data-line="37" id="line-copy-remaining-left2">            arr[k] = L[i];</span>
+<span class="code-line highlightable" data-line="38" id="line-i++2">            i++; k++;</span>
+<span class="code-line" data-line="39">        }</span>
+<span class="code-line highlightable" data-line="40" id="line-copy-remaining-right">        while (j < n2) {</span>
+<span class="code-line highlightable" data-line="41" id="line-copy-remaining-right2">            arr[k] = R[j];</span>
+<span class="code-line highlightable" data-line="42" id="line-j++2">            j++; k++;</span>
+<span class="code-line" data-line="43">        }</span>
+<span class="code-line" data-line="44">    }</span>
+<span class="code-line" data-line="45">    </span>
+<span class="code-line" data-line="46">    public static void main(String[] args) {</span>
+<span class="code-line" data-line="47">        int[] numeros = {64, 34, 25, 12, 22, 11, 90};</span>
+<span class="code-line" data-line="48">        System.out.println("Array original: " + java.util.Arrays.toString(numeros));</span>
+<span class="code-line" data-line="49">        mergeSort(numeros, 0, numeros.length - 1);</span>
+<span class="code-line" data-line="50">        System.out.println("Array ordenado: " + java.util.Arrays.toString(numeros));</span>
+<span class="code-line" data-line="51">    }</span>
+<span class="code-line" data-line="52">}</span></code></pre>
+            </div>
+
+            <!-- Representación del Array -->
+            <div class="array-box">
+                <h3>📊 Representación Visual del Array</h3>
+                <div class="array-container" id="array-visual">
+                    <!-- Elementos se generarán dinámicamente -->
+                </div>
+                <p><strong>Tamaño del array:</strong> <span id="array-size">7</span></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Script -->
+    <script>
+        class MergeSortSimulator {
+            constructor() {
+                this.currentStep = 0;
+                this.array = [];
+                this.originalArray = [];
+                this.size = 7;
+                this.stepsHistory = [];
+                this.executionStack = []; // Pila de llamadas recursivas
+                this.currentCall = null;
+                this.isRunning = false;
+
+                this.initializeElements();
+                this.bindEvents();
+                this.generarArray();
+                this.reiniciar();
+            }
+
+            initializeElements() {
+                this.btnGenerar = document.getElementById('btn-generar');
+                this.btnReiniciar = document.getElementById('btn-reiniciar');
+                this.btnAnterior = document.getElementById('btn-anterior');
+                this.btnSiguiente = document.getElementById('btn-siguiente');
+                this.stepExplanation = document.getElementById('step-explanation');
+
+                this.pasoEl = document.getElementById('paso');
+                this.pasoProgress = document.getElementById('paso-progress');
+                this.resultBox = document.getElementById('result-box');
+                this.resultMessage = document.getElementById('result-message');
+                this.arraySizeEl = document.getElementById('array-size');
+
+                this.codeLines = {};
+                const lineIds = [
+                    'line-main-method', 'line-base-case', 'line-mid', 
+                    'line-divide-left', 'line-divide-right', 'line-merge',
+                    'line-merge-method', 'line-create-temp', 'line-create-temp2',
+                    'line-init-temp', 'line-init-temp2', 'line-copy-left',
+                    'line-copy-left2', 'line-copy-right', 'line-copy-right2',
+                    'line-merge-start', 'line-merge-loop', 'line-compare-merge',
+                    'line-assign-left', 'line-i++', 'line-assign-right', 'line-j++',
+                    'line-k++', 'line-copy-remaining-left', 'line-copy-remaining-left2',
+                    'line-i++2', 'line-copy-remaining-right', 'line-copy-remaining-right2',
+                    'line-j++2'
+                ];
+                lineIds.forEach(id => {
+                    this.codeLines[id] = document.getElementById(id);
+                });
+
+                this.arrayVisual = document.getElementById('array-visual');
+            }
+
+            bindEvents() {
+                this.btnGenerar.addEventListener('click', () => this.generarArray());
+                this.btnReiniciar.addEventListener('click', () => this.reiniciar());
+                this.btnAnterior.addEventListener('click', () => this.pasoAnterior());
+                this.btnSiguiente.addEventListener('click', () => this.siguientePaso());
+            }
+
+            generarArray() {
+                this.array = [];
+                for (let i = 0; i < this.size; i++) {
+                    this.array.push(Math.floor(Math.random() * 50) + 1);
+                }
+                this.originalArray = [...this.array];
+                this.actualizarVisualizacionArray();
+                this.reiniciar();
+            }
+
+            actualizarVisualizacionArray() {
+                this.arrayVisual.innerHTML = '';
+                for (let i = 0; i < this.array.length; i++) {
+                    const elemento = document.createElement('div');
+                    elemento.className = 'array-element';
+                    elemento.id = `element-${i}`;
+                    elemento.innerHTML = `
+                        <div class="array-index">${i}</div>
+                        ${this.array[i]}
+                    `;
+                    this.arrayVisual.appendChild(elemento);
+                }
+                this.arraySizeEl.textContent = this.array.length;
+            }
+
+            reiniciar() {
+                this.currentStep = 0;
+                this.stepsHistory = [];
+                this.executionStack = [];
+                this.currentCall = null;
+                this.isRunning = false;
+
+                // Inicializar con la primera llamada
+                this.executionStack.push({
+                    type: 'mergeSort',
+                    left: 0,
+                    right: this.array.length - 1,
+                    phase: 'start',
+                    description: `Iniciando mergeSort(0, ${this.array.length - 1})`
+                });
+
+                this.resetAll();
+                this.stepExplanation.innerHTML = "¡Bienvenido a la simulación interactiva del Merge Sort!<br><br>Presiona \"Siguiente\" para ver cómo se divide y fusiona el array recursivamente.";
+                this.pasoEl.textContent = "Estado inicial. Presiona 'Siguiente' para comenzar.";
+                this.resultMessage.textContent = "El ordenamiento aún no ha comenzado.";
+                this.resultBox.className = "result-box";
+                this.updateUI();
+            }
+
+            resetAll() {
+                document.querySelectorAll('.code-line.highlight').forEach(el => el.classList.remove('highlight'));
+                for (let i = 0; i < this.array.length; i++) {
+                    const el = document.getElementById(`element-${i}`);
+                    if (el) el.className = 'array-element';
+                }
+            }
+
+            actualizarIndicadoresArray(left = 0, right = this.array.length - 1, phase = '') {
+                for (let i = 0; i < this.array.length; i++) {
+                    const el = document.getElementById(`element-${i}`);
+                    if (el) {
+                        el.classList.remove('dividing', 'merging', 'sorted');
+                        if (i >= left && i <= right) {
+                            if (phase === 'dividing') {
+                                el.classList.add('dividing');
+                            } else if (phase === 'merging') {
+                                el.classList.add('merging');
+                            }
+                        }
+                        if (phase === 'complete') {
+                            el.classList.add('sorted');
+                        }
+                    }
+                }
+            }
+
+            guardarEstadoActual() {
+                const estado = {
+                    currentStep: this.currentStep,
+                    array: [...this.array],
+                    executionStack: JSON.parse(JSON.stringify(this.executionStack)),
+                    currentCall: this.currentCall ? {...this.currentCall} : null
+                };
+                this.stepsHistory[this.currentStep] = {...estado};
+            }
+
+            restaurarEstadoAnterior() {
+                if (this.currentStep < this.stepsHistory.length && this.stepsHistory[this.currentStep]) {
+                    const estado = this.stepsHistory[this.currentStep];
+                    this.array = [...estado.array];
+                    this.executionStack = JSON.parse(JSON.stringify(estado.executionStack));
+                    this.currentCall = estado.currentCall ? {...estado.currentCall} : null;
+
+                    this.resetAll();
+                    this.actualizarVisualizacionArray();
+                    if (this.currentCall) {
+                        this.actualizarIndicadoresArray(this.currentCall.left, this.currentCall.right, this.currentCall.phase);
+                    }
+                }
+            }
+
+            async resaltarLinea(lineId, mensaje, left = 0, right = 0, phase = '') {
+                this.resetAll();
+                if (lineId && this.codeLines[lineId]) {
+                    this.codeLines[lineId].classList.add('highlight');
+                }
+                this.pasoEl.textContent = mensaje;
+                this.actualizarVisualizacionArray();
+                this.actualizarIndicadoresArray(left, right, phase);
+                await this.sleep(800);
+            }
+
+            async siguientePaso() {
+                if (this.isRunning) return;
+                this.isRunning = true;
+
+                this.guardarEstadoActual();
+                this.currentStep++;
+
+                if (this.executionStack.length === 0) {
+                    this.terminarSimulacion();
+                    this.isRunning = false;
+                    return;
+                }
+
+                this.currentCall = this.executionStack.shift();
+
+                try {
+                    if (this.currentCall.type === 'mergeSort') {
+                        await this.ejecutarMergeSortPaso(this.currentCall);
+                    } else if (this.currentCall.type === 'merge') {
+                        await this.ejecutarMergePaso(this.currentCall);
+                    }
+                } catch (error) {
+                    console.error("Error en siguientePaso:", error);
+                }
+
+                this.isRunning = false;
+                this.updateUI();
+            }
+
+            async ejecutarMergeSortPaso(call) {
+                const { left, right, phase } = call;
+
+                if (phase === 'start') {
+                    await this.resaltarLinea('line-main-method', `Llamada: mergeSort(${left}, ${right})`, left, right, 'dividing');
+                    await this.resaltarLinea('line-base-case', `¿${left} < ${right}?`, left, right, 'dividing');
+
+                    if (left >= right) {
+                        // Caso base: no se hace nada
+                        return;
+                    }
+
+                    // Calcular punto medio
+                    const mid = Math.floor((left + right) / 2);
+                    await this.resaltarLinea('line-mid', `mid = ${mid}`, left, right, 'dividing');
+
+                    // Programar llamadas recursivas
+                    this.executionStack.unshift({
+                        type: 'merge',
+                        left,
+                        mid,
+                        right,
+                        phase: 'start',
+                        description: `Fusionando [${left}...${right}]`
+                    });
+
+                    this.executionStack.unshift({
+                        type: 'mergeSort',
+                        left: mid + 1,
+                        right,
+                        phase: 'start',
+                        description: `mergeSort(${mid + 1}, ${right})`
+                    });
+
+                    this.executionStack.unshift({
+                        type: 'mergeSort',
+                        left,
+                        right: mid,
+                        phase: 'start',
+                        description: `mergeSort(${left}, ${mid})`
+                    });
+                }
+            }
+
+            async ejecutarMergePaso(call) {
+                const { left, mid, right, phase = 'start' } = call;
+
+                if (phase === 'start') {
+                    await this.resaltarLinea('line-merge-method', `Fusionando subarrays [${left}...${mid}] y [${mid + 1}...${right}]`, left, right, 'merging');
+
+                    // Crear arrays temporales
+                    const n1 = mid - left + 1;
+                    const n2 = right - mid;
+                    await this.resaltarLinea('line-create-temp', `n1 = ${n1} (tamaño izquierda)`, left, right, 'merging');
+                    await this.resaltarLinea('line-create-temp2', `n2 = ${n2} (tamaño derecha)`, left, right, 'merging');
+
+                    const L = new Array(n1);
+                    const R = new Array(n2);
+                    await this.resaltarLinea('line-init-temp', `Creando array L[${n1}]`, left, right, 'merging');
+                    await this.resaltarLinea('line-init-temp2', `Creando array R[${n2}]`, left, right, 'merging');
+
+                    // Copiar datos
+                    for (let i = 0; i < n1; i++) {
+                        L[i] = this.array[left + i];
+                    }
+                    await this.resaltarLinea('line-copy-left', `Copiando elementos izquierdos a L`, left, right, 'merging');
+                    await this.resaltarLinea('line-copy-left2', `L = [${L.join(', ')}]`, left, right, 'merging');
+
+                    for (let j = 0; j < n2; j++) {
+                        R[j] = this.array[mid + 1 + j];
+                    }
+                    await this.resaltarLinea('line-copy-right', `Copiando elementos derechos a R`, left, right, 'merging');
+                    await this.resaltarLinea('line-copy-right2', `R = [${R.join(', ')}]`, left, right, 'merging');
+
+                    // Fusionar
+                    let i = 0, j = 0, k = left;
+                    await this.resaltarLinea('line-merge-start', `Inicializando: i=0, j=0, k=${left}`, left, right, 'merging');
+
+                    // Mientras haya elementos en ambos arrays
+                    while (i < n1 && j < n2) {
+                        await this.resaltarLinea('line-merge-loop', `Comparando L[${i}]=${L[i]} con R[${j}]=${R[j]}`, left, right, 'merging');
+                        if (L[i] <= R[j]) {
+                            await this.resaltarLinea('line-compare-merge', `${L[i]} <= ${R[j]} → tomamos L[${i}]`, left, right, 'merging');
+                            await this.resaltarLinea('line-assign-left', `arr[${k}] = ${L[i]}`, left, right, 'merging');
+                            this.array[k] = L[i];
+                            this.actualizarVisualizacionArray();
+                            this.actualizarIndicadoresArray(left, right, 'merging');
+                            await this.sleep(400);
+                            await this.resaltarLinea('line-i++', `i++ → i=${i + 1}`, left, right, 'merging');
+                            i++;
+                        } else {
+                            await this.resaltarLinea('line-compare-merge', `${L[i]} > ${R[j]} → tomamos R[${j}]`, left, right, 'merging');
+                            await this.resaltarLinea('line-assign-right', `arr[${k}] = ${R[j]}`, left, right, 'merging');
+                            this.array[k] = R[j];
+                            this.actualizarVisualizacionArray();
+                            this.actualizarIndicadoresArray(left, right, 'merging');
+                            await this.sleep(400);
+                            await this.resaltarLinea('line-j++', `j++ → j=${j + 1}`, left, right, 'merging');
+                            j++;
+                        }
+                        await this.resaltarLinea('line-k++', `k++ → k=${k + 1}`, left, right, 'merging');
+                        k++;
+                    }
+
+                    // Copiar elementos restantes de L
+                    while (i < n1) {
+                        await this.resaltarLinea('line-copy-remaining-left', `Copiando resto de L: L[${i}] = ${L[i]}`, left, right, 'merging');
+                        await this.resaltarLinea('line-copy-remaining-left2', `arr[${k}] = ${L[i]}`, left, right, 'merging');
+                        this.array[k] = L[i];
+                        this.actualizarVisualizacionArray();
+                        this.actualizarIndicadoresArray(left, right, 'merging');
+                        await this.sleep(400);
+                        await this.resaltarLinea('line-i++2', `i++, k++`, left, right, 'merging');
+                        i++; k++;
+                    }
+
+                    // Copiar elementos restantes de R
+                    while (j < n2) {
+                        await this.resaltarLinea('line-copy-remaining-right', `Copiando resto de R: R[${j}] = ${R[j]}`, left, right, 'merging');
+                        await this.resaltarLinea('line-copy-remaining-right2', `arr[${k}] = ${R[j]}`, left, right, 'merging');
+                        this.array[k] = R[j];
+                        this.actualizarVisualizacionArray();
+                        this.actualizarIndicadoresArray(left, right, 'merging');
+                        await this.sleep(400);
+                        await this.resaltarLinea('line-j++2', `j++, k++`, left, right, 'merging');
+                        j++; k++;
+                    }
+
+                    await this.resaltarLinea(null, `¡Subarray [${left}...${right}] fusionado y ordenado!`, left, right, 'merging');
+                }
+            }
+
+            async pasoAnterior() {
+                if (this.currentStep > 0) {
+                    this.currentStep--;
+                    this.restaurarEstadoAnterior();
+                    this.updateUI();
+                }
+            }
+
+            terminarSimulacion() {
+                this.resetAll();
+                for (let i = 0; i < this.array.length; i++) {
+                    const el = document.getElementById(`element-${i}`);
+                    if (el) el.classList.add('sorted');
+                }
+                this.stepExplanation.innerHTML = "✅ ¡Ordenamiento completado!<br><br>El array está completamente ordenado mediante Merge Sort. ¡Dividir, conquistar y fusionar funciona!";
+                this.pasoEl.textContent = "Ordenamiento completado.";
+                this.resultMessage.textContent = "El array ha sido ordenado exitosamente con complejidad O(n log n).";
+                this.resultBox.className = "result-box";
+                this.btnSiguiente.disabled = true;
+                this.updateUI();
+            }
+
+            sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            updateUI() {
+                this.btnAnterior.disabled = this.currentStep <= 0;
+                this.btnSiguiente.disabled = this.executionStack.length === 0 && !this.isRunning;
+
+                // Progreso aproximado (no exacto por recursión, pero damos feedback)
+                let progress = 0;
+                if (this.currentStep > 0) {
+                    // Estimamos progreso en base a pasos realizados
+                    progress = Math.min((this.currentStep / (this.array.length * 3)) * 100, 95);
+                }
+                if (this.executionStack.length === 0) progress = 100;
+                this.pasoProgress.style.width = `${progress}%`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            new MergeSortSimulator();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía de Estudio - Algoritmos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .study-path {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .module {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        
+        .module h2 {
+            color: #2575fc;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .links-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .card p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #2575fc;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #1a60cf;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .study-path {
+                flex-direction: column;
+            }
+            
+            .links-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Guía de Estudio - Algoritmos</h1>
+            <p class="description">Explora los conceptos fundamentales de programación, estructuras de control, algoritmos de búsqueda y ordenamiento. Sigue la ruta de estudio recomendada para un aprendizaje efectivo.</p>
+        </header>
+        
+        <div class="study-path">
+            <div class="module">
+                <h2>Ruta de Estudio Recomendada</h2>
+                <ol>
+                    <li>Fundamentos de Programación (POO)</li>
+                    <li>Estructuras de Control (if-else, case, bucles)</li>
+                    <li>Complejidad Algorítmica (Notación Big O)</li>
+                    <li>Algoritmos de Búsqueda</li>
+                    <li>Algoritmos de Ordenamiento</li>
+                </ol>
+                <p style="margin-top: 15px;"><strong>Sugerencia:</strong> Sigue este orden para construir una base sólida antes de abordar conceptos más complejos.</p>
+            </div>
+        </div>
+        
+        <div class="links-container">
+            <div class="card">
+                <div class="card-content">
+                    <h3>POO</h3>
+                    <p>Programación Orientada a Objetos: clases, objetos, herencia, polimorfismo.</p>
+                    <a href="POO.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>If-Else</h3>
+                    <p>Estructuras condicionales para toma de decisiones en programación.</p>
+                    <a href="if-else.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Case/Switch</h3>
+                    <p>Estructura de control para múltiples condiciones y casos.</p>
+                    <a href="case.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Bucle While</h3>
+                    <p>Estructura repetitiva que ejecuta código mientras se cumpla una condición.</p>
+                    <a href="while.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Bucle Do-While</h3>
+                    <p>Variante del bucle while que garantiza al menos una ejecución.</p>
+                    <a href="do-while.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Bucle For</h3>
+                    <p>Bucle con inicialización, condición e incremento en una sola línea.</p>
+                    <a href="for.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Notación Big O</h3>
+                    <p>Complejidad algorítmica y análisis de eficiencia de algoritmos.</p>
+                    <a href="notacionBigO.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Búsqueda Secuencial</h3>
+                    <p>Algoritmo de búsqueda que revisa elementos uno por uno.</p>
+                    <a href="busquedaSecuencial.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Búsqueda Binaria</h3>
+                    <p>Algoritmo eficiente para buscar en arreglos ordenados.</p>
+                    <a href="busquedaBinaria.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Búsqueda Hashing</h3>
+                    <p>Algoritmo de búsqueda mediante funciones hash y tablas.</p>
+                    <a href="busquedahashing.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-content">
+                    <h3>Ordenamiento Burbuja</h3>
+                    <p>Algoritmo de ordenamiento simple que compara elementos adyacentes.</p>
+                    <a href="ordenamientoBurbuja.html" class="btn">Estudiar Ahora</a>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Guía de Algoritmos - Diseñada para un aprendizaje efectivo</p>
+        </footer>
+    </div>
+</body>
+</html>
